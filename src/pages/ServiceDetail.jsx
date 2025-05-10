@@ -4,6 +4,7 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker'; // Импортируем компонент для выбора даты
 import "react-datepicker/dist/react-datepicker.css"; // Стиль для календаря
 import { setHours, setMinutes, isBefore, isAfter, isToday } from 'date-fns'; // Для установки времени и фильтрации
+import { ru } from 'date-fns/locale'; // Импортируем русскую локаль
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,11 +19,9 @@ export default function ServiceDetail() {
   useEffect(() => {
     const fetchService = async () => {
       try {
-        console.log("Запрашиваем услугу с ID:", serviceId); // Логируем ID
         const response = await axios.get(`${API_URL}/services/${serviceId}`);
         setService(response.data);
       } catch (err) {
-        console.error("Ошибка при запросе услуги:", err); // Логируем ошибку
         setError('Не удалось загрузить услугу. Проверьте API или ID услуги.');
       } finally {
         setLoading(false);
@@ -44,23 +43,22 @@ export default function ServiceDetail() {
       alert('Вы успешно записались на услугу!');
       navigate('/appointments'); // Перенаправляем на страницу записей
     } catch (err) {
-      console.error("Ошибка при записи на услугу:", err);
       setError('Не удалось записаться на услугу.');
     }
   };
 
-  // Фильтр времени, чтобы ограничить его с 9:00 до 20:45
+  // Фильтрация времени для текущего дня с 9:00 до 20:45
   const timeFilter = (time) => {
     const startOfDay = setHours(setMinutes(new Date(), 0), 9);  // 9:00 AM
     const endOfDay = setHours(setMinutes(new Date(), 45), 20);  // 20:45 PM (8:45 PM)
-    
-    // Если это сегодняшняя дата
+
+    // Для сегодняшнего дня ограничиваем выбор времени с 9:00 до 20:45
     if (isToday(time)) {
       return isAfter(time, startOfDay) && isBefore(time, endOfDay);
-    } else {
-      // Для всех других дней, разрешаем выбирать только время с 9:00 до 20:45
-      return isAfter(time, startOfDay) && isBefore(time, endOfDay);
     }
+
+    // Для всех будущих дней разрешаем выбрать время с 9:00 до 20:45
+    return true; // Для будущих дней не ограничиваем время, только фильтруем на диапазон
   };
 
   if (loading) {
@@ -93,6 +91,7 @@ export default function ServiceDetail() {
             required
           />
 
+
           {/* Календарь для выбора даты и времени */}
           <div className="mb-4">
             <label htmlFor="appointment-time" className="block text-lg">Выберите дату и время:</label>
@@ -106,7 +105,7 @@ export default function ServiceDetail() {
               minDate={new Date()} // Минимальная дата - текущая
               className="w-full px-4 py-2 rounded border" // Стиль для календаря
               timeFormat="HH:mm" // 24-часовой формат
-              locale="ru" // Устанавливаем русский локаль для отображения
+              locale={ru} // Устанавливаем русский локаль для отображения
               filterTime={timeFilter} // Применяем фильтр времени
             />
           </div>
