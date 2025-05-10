@@ -11,6 +11,8 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend_network
 
   web:
     build: .
@@ -23,6 +25,12 @@ services:
       - db
     env_file:
       - .env
+    networks:
+      - backend_network
 
 volumes:
   pgdata:
+
+networks:
+  backend_network:
+    driver: bridge
