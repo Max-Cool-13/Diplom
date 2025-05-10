@@ -3,10 +3,22 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DatePicker from 'react-datepicker'; // Импортируем компонент для выбора даты
 import "react-datepicker/dist/react-datepicker.css"; // Стиль для календаря
-import { setHours, setMinutes, isBefore, isAfter, isToday } from 'date-fns'; // Для установки времени и фильтрации
+import { setHours, setMinutes, isBefore, isAfter, isToday, isSameDay } from 'date-fns'; // Для установки времени и фильтрации
 import { ru } from 'date-fns/locale'; // Импортируем русскую локаль
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+// Массив с фиксированными праздничными днями (можно добавить больше праздников)
+const holidays = [
+  { day: 1, month: 1, name: 'Новый год' }, // Новый год
+  { day: 7, month: 1, name: 'Рождество Христово' }, // Рождество
+  { day: 8, month: 3, name: 'Международный женский день' }, // 8 марта
+  { day: 1, month: 5, name: 'Праздник Весны и Труда' }, // 1 мая
+  { day: 9, month: 5, name: 'День Победы' }, // 9 мая
+  { day: 12, month: 6, name: 'День России' }, // 12 июня
+  { day: 4, month: 11, name: 'День народного единства' }, // 4 ноября
+  // Добавьте сюда остальные праздники
+];
 
 export default function ServiceDetail() {
   const { serviceId } = useParams(); // Получаем ID услуги из параметров URL
@@ -47,18 +59,41 @@ export default function ServiceDetail() {
     }
   };
 
+  // Проверка, является ли день понедельником
+  const isMonday = (date) => {
+    const day = date.getDay();
+    return day === 1; // 1 — это понедельник
+  };
+
+  // Проверка на праздничные дни
+  const isHoliday = (date) => {
+    const month = date.getMonth() + 1; // Месяцы в JavaScript начинаются с 0
+    const day = date.getDate();
+    return holidays.some(holiday => holiday.month === month && holiday.day === day);
+  };
+
   // Фильтрация времени для текущего дня с 9:00 до 20:45
   const timeFilter = (time) => {
-    const startOfDay = setHours(setMinutes(new Date(), 0), 9);  // 9:00 AM
-    const endOfDay = setHours(setMinutes(new Date(), 45), 20);  // 20:45 PM (8:45 PM)
+    const startOfDay = setHours(setMinutes(new Date(), 0), 9); // 9:00 AM
+    const endOfDay = setHours(setMinutes(new Date(), 45), 20); // 20:45 PM (8:45 PM)
 
-    // Для сегодняшнего дня ограничиваем выбор времени с 9:00 до 20:45
     if (isToday(time)) {
+      // Для сегодняшнего дня, фильтруем только с 9:00 до 20:45
       return isAfter(time, startOfDay) && isBefore(time, endOfDay);
+    } else {
+      // Для будущих дней (например, 11 мая) разрешаем выбор времени только с 9:00 до 20:45
+      const futureDayStart = setHours(setMinutes(time, 0), 9); // Начало дня (9:00 AM)
+      const futureDayEnd = setHours(setMinutes(time, 45), 20); // Конец дня (20:45 PM)
+      return isAfter(time, futureDayStart) && isBefore(time, futureDayEnd);
     }
+  };
 
-    // Для всех будущих дней разрешаем выбрать время с 9:00 до 20:45
-    return true; // Для будущих дней не ограничиваем время, только фильтруем на диапазон
+  // Функция фильтрации на основе рабочего дня и понедельников
+  const filterDate = (date) => {
+    if (isMonday(date) || isHoliday(date)) {
+      return false; // Понедельники и праздничные дни — выходные
+    }
+    return true; // Все остальные дни доступны
   };
 
   if (loading) {
@@ -91,7 +126,6 @@ export default function ServiceDetail() {
             required
           />
 
-
           {/* Календарь для выбора даты и времени */}
           <div className="mb-4">
             <label htmlFor="appointment-time" className="block text-lg">Выберите дату и время:</label>
@@ -107,6 +141,7 @@ export default function ServiceDetail() {
               timeFormat="HH:mm" // 24-часовой формат
               locale={ru} // Устанавливаем русский локаль для отображения
               filterTime={timeFilter} // Применяем фильтр времени
+              filterDate={filterDate} // Применяем фильтр рабочих дней (понедельники — выходные)
             />
           </div>
 
