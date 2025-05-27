@@ -10,7 +10,21 @@ const Navbar = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token); // Если токен есть, то авторизован
-  }, [localStorage.getItem("token")]); // Слушаем изменения токена
+
+    // Добавляем событие для прослушивания изменений в localStorage
+    const handleStorageChange = () => {
+      const updatedToken = localStorage.getItem("token");
+      setIsAuthenticated(!!updatedToken); // Обновляем состояние авторизации
+    };
+
+    // Слушаем изменения localStorage
+    window.addEventListener("storage", handleStorageChange);
+
+    // Убираем слушатель при размонтировании компонента
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []); // Пустой массив зависимостей, чтобы useEffect сработал только один раз
 
   const logout = () => {
     localStorage.removeItem("token"); // Удаляем токен при выходе
@@ -54,6 +68,7 @@ const Navbar = () => {
           <li><Link to="/services" onClick={() => setIsOpen(false)} className="block text-white hover:text-[#c49b66]">Услуги</Link></li>
           <li><Link to="/marketplace" onClick={() => setIsOpen(false)} className="block text-white hover:text-[#c49b66]">Магазин</Link></li>
           <li><Link to="/contact" onClick={() => setIsOpen(false)} className="block text-white hover:text-[#c49b66]">Контакты</Link></li>
+
 
           {isAuthenticated ? (
             <>

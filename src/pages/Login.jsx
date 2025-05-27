@@ -36,8 +36,11 @@ export default function Login() {
       // Сохраняем токен в localStorage
       localStorage.setItem('token', response.data.access_token);
 
-      // Редиректим на страницу профиля или на главную страницу
-      navigate('/profile');  // Замените на нужный маршрут
+      // Редиректим на страницу профиля
+      navigate('/profile');
+      
+      // Перезагружаем страницу после успешного входа
+      window.location.reload();
     } catch (err) {
       setError('Неверный логин или пароль');
     } finally {

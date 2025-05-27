@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -12,7 +13,20 @@ import Profile from './pages/Profile';
 import Navbar from './components/Navbar'; // Импортируем Navbar вместо Header
 
 function App() {
-  const token = localStorage.getItem('token');
+  const [token, setToken] = useState(localStorage.getItem('token'));
+
+  // Хук для отслеживания изменений в localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setToken(localStorage.getItem('token')); // Обновляем состояние при изменении localStorage
+    };
+
+    window.addEventListener('storage', handleStorageChange); // Слушаем изменения в localStorage
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange); // Убираем слушатель при размонтировании
+    };
+  }, []);
 
   // Защищенные маршруты: только для авторизованных пользователей
   const ProtectedRoute = ({ element }) => {
@@ -21,7 +35,7 @@ function App() {
 
   return (
     <div className="bg-black min-h-screen text-white">
-      <Navbar /> {/* Здесь теперь Navbar вместо Header */}
+      <Navbar />
       <div className="mt-16 px-4">
         <Routes>
           <Route path="/" element={<Home />} />
