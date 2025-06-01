@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DatePicker from 'react-datepicker'; // Импортируем компонент для выбора даты
 import "react-datepicker/dist/react-datepicker.css"; // Стиль для календаря
-import { setHours, setMinutes, isBefore, isAfter, isToday, isSameDay } from 'date-fns'; // Для установки времени и фильтрации
+import { setHours, setMinutes, isBefore, isAfter, isToday } from 'date-fns'; // Для установки времени и фильтрации
 import { ru } from 'date-fns/locale'; // Импортируем русскую локаль
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -26,6 +26,8 @@ export default function ServiceDetail() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date()); // Состояние для хранения выбранной даты
+  const [clientName, setClientName] = useState(''); // Состояние для имени клиента
+  const [clientPhone, setClientPhone] = useState(''); // Состояние для телефона клиента
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,21 +45,35 @@ export default function ServiceDetail() {
     fetchService();
   }, [serviceId]);
 
-  const handleAppointment = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${API_URL}/appointments/`, {
-        service_id: service.id,
-        name: 'Имя клиента',
-        phone: 'Телефон клиента',
-        appointment_time: selectedDate.toISOString(), // Отправляем время записи в формате ISO
-      });
-      alert('Вы успешно записались на услугу!');
-      navigate('/appointments'); // Перенаправляем на страницу записей
-    } catch (err) {
-      setError('Не удалось записаться на услугу.');
-    }
-  };
+ const handleAppointment = async (e) => {
+  e.preventDefault();
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    alert('Вы не авторизованы! Пожалуйста, войдите в систему.');
+    navigate('/login'); // Перенаправляем пользователя на страницу входа
+    return;
+  }
+
+  try {
+    const response = await axios.post(`${API_URL}/appointments/`, {
+      service_id: service.id,
+      client_name: clientName,
+      client_phone: clientPhone,
+      appointment_time: selectedDate.toISOString(),
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}` // Передаем токен в заголовке запроса
+      }
+    });
+    alert('Вы успешно записались на услугу!');
+    navigate('/appointments'); // Перенаправляем на страницу записей
+  } catch (err) {
+    setError('Не удалось записаться на услугу.');
+  }
+};
+
+
 
   // Проверка, является ли день понедельником
   const isMonday = (date) => {
@@ -117,12 +133,16 @@ export default function ServiceDetail() {
             type="text"
             placeholder="Ваше имя"
             className="w-full px-4 py-2 rounded border"
+            value={clientName}
+            onChange={(e) => setClientName(e.target.value)} // Обработчик изменения имени
             required
           />
           <input
             type="tel"
             placeholder="Ваш телефон"
             className="w-full px-4 py-2 rounded border"
+            value={clientPhone}
+            onChange={(e) => setClientPhone(e.target.value)} // Обработчик изменения телефона
             required
           />
 
