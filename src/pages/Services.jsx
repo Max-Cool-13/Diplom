@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { motion } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -92,25 +93,36 @@ export default function Services() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white text-black px-4">
-      <div className="bg-gray-100 p-8 rounded shadow-md w-full max-w-3xl">
-        <h1 className="text-3xl font-bold mb-6 text-center">Услуги</h1>
+    <div className="bg-gray-900 min-h-screen py-12 text-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.h1
+          className="text-4xl font-extrabold text-center text-[#00baff] mb-8" // Голубой цвет для заголовка
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          Услуги
+        </motion.h1>
 
         {loading ? (
           <div>Загрузка...</div>
         ) : error ? (
           <div className="text-red-500 text-sm mb-4">{error}</div>
         ) : (
-          <div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
+          >
             {services.length === 0 ? (
               <div>Услуги не найдены</div>
             ) : (
               <ul className="space-y-4">
                 {services.map((service) => (
-                  <div key={service.id} className="flex justify-between items-center bg-white p-4 rounded shadow hover:bg-gray-200">
-                    <Link to={`/service/${service.id}`} className="w-full">
+                  <div key={service.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700">
+                    <Link to={`/service/${service.id}`} className="w-full text-[#00baff] hover:text-[#8a2be2] transition-all duration-300">
                       <h2 className="text-xl font-semibold">{service.name}</h2>
-                      <p className="text-gray-700">{service.description}</p>
+                      <p className="text-gray-300">{service.description}</p>
                       <p className="text-gray-500">Цена: {service.price} ₽</p>
                     </Link>
 
@@ -127,20 +139,20 @@ export default function Services() {
                 ))}
               </ul>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* Панель добавления услуги для администратора */}
         {isAdmin && (
-          <div className="mt-6">
-            <h2 className="text-2xl font-semibold mb-4">Добавить услугу</h2>
+          <div className="mt-6 bg-gray-800 p-8 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4 text-[#00baff]">Добавить услугу</h2> {/* Голубой цвет для заголовка */}
             <form onSubmit={handleAddService} className="space-y-4">
               <input
                 type="text"
                 placeholder="Название услуги"
                 value={newService.name}
                 onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                className="w-full px-4 py-2 rounded border"
+                className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
                 required
               />
               <input
@@ -148,7 +160,7 @@ export default function Services() {
                 placeholder="Описание услуги"
                 value={newService.description}
                 onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-                className="w-full px-4 py-2 rounded border"
+                className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
                 required
               />
               <input
@@ -156,12 +168,12 @@ export default function Services() {
                 placeholder="Цена"
                 value={newService.price}
                 onChange={(e) => setNewService({ ...newService, price: e.target.value })}
-                className="w-full px-4 py-2 rounded border"
+                className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
                 required
               />
               <button
                 type="submit"
-                className="w-full bg-black hover:bg-gray-900 text-white py-2 rounded"
+                className="w-full bg-[#00baff] hover:bg-[#0095cc] text-white py-2 rounded"
               >
                 Добавить услугу
               </button>
