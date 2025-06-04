@@ -98,3 +98,15 @@ h1, h2, h3 {
     0 0 30px rgba(0, 186, 255, 0.8),  /* Голубая тень */
     0 0 40px rgba(0, 186, 255, 0.6); /* Голубая тень */
 }
+
+
+.status-not-completed {
+  color: red;
+  font-weight: bold;
+}
+
+/* CSS для зеленого статуса (выполнен) */
+.status-completed {
+  color: green;
+  font-weight: bold;
+}
