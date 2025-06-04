@@ -5,3 +5,15 @@
 body {
   @apply bg-gray-900 text-white font-sans;
 }
+
+/* CSS для красного статуса (не выполнен) */
+.status-not-completed {
+  color: red;
+  font-weight: bold;
+}
+
+/* CSS для зеленого статуса (выполнен) */
+.status-completed {
+  color: green;
+  font-weight: bold;
+}
