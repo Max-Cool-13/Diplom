@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import background1 from "../assets/bg1.jpg";
+import background1 from "../assets/Fon.jpeg";
 import background2 from "../assets/bg2.jpg";
 import background3 from "../assets/bg3.jpg";
 import { motion } from 'framer-motion';
@@ -81,7 +81,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="text-white bg-black min-h-screen">
+    <div className="text-white bg-gray-900 min-h-screen"> {/* Изменен фон на темный серый (#2d2d2d) */}
       {/* Главный экран с фоном */}
       <div className="relative h-screen overflow-hidden">
         <img
@@ -91,7 +91,7 @@ const Home = () => {
         />
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
           <motion.h1
-            className="text-5xl md:text-6xl font-bold drop-shadow-lg"
+            className="text-5xl md:text-6xl font-bold drop-shadow-lg text-gradient"
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
@@ -99,7 +99,7 @@ const Home = () => {
             Барбершоп N1
           </motion.h1>
           <motion.p
-            className="mt-4 text-xl md:text-2xl drop-shadow"
+            className="mt-4 text-xl md:text-2xl drop-shadow text-gradient"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
@@ -108,7 +108,7 @@ const Home = () => {
           </motion.p>
           <motion.a
             href="/services" // Изменено на /services
-            className="mt-6 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full transition shadow-lg"
+            className="mt-6 bg-[#00baff] hover:bg-[#8a2be2] text-white px-6 py-3 rounded-full transition shadow-lg"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 1 }}
@@ -120,8 +120,8 @@ const Home = () => {
 
       {/* Яндекс Карта с метками */}
       <div className="my-12 px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-semibold text-center mb-6">Наша локация</h2>
-        <div className="w-full max-w-4xl mx-auto h-96 border-4 border-[#c49b66] rounded-lg shadow-lg overflow-hidden">
+        <h2 className="text-3xl font-semibold text-center mb-6 text-gradient">Наша локация</h2>
+        <div className="w-full max-w-4xl mx-auto h-96 border-4 border-[#00baff] rounded-lg shadow-lg overflow-hidden">
           <div id="map" style={{ width: '100%', height: '100%' }}></div> {/* Контейнер для карты */}
         </div>
       </div>

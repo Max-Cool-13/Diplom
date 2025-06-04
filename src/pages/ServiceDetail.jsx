@@ -27,6 +27,9 @@ export default function ServiceDetail() {
   const [clientName, setClientName] = useState('');
   const [clientPhone, setClientPhone] = useState('');
   const [bookedSlots, setBookedSlots] = useState([]);
+  const [comment, setComment] = useState('');
+  const [masterId, setMasterId] = useState(null);  // Поле для выбора мастера
+  const [masters, setMasters] = useState([]);  // Список мастеров
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,15 +50,30 @@ export default function ServiceDetail() {
           params: { service_id: serviceId }
         });
         const slots = response.data.map(appointment => appointment.appointment_time);
-        setBookedSlots(slots); // Сохраняем все забронированные слоты
+        setBookedSlots(slots);
       } catch (err) {
         console.error('Ошибка при загрузке забронированных слотов', err);
+      }
+    };
+
+    const fetchMasters = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/masters/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setMasters(response.data);
+      } catch (err) {
+        console.error('Ошибка при загрузке мастеров', err);
       }
     };
 
     if (serviceId) {
       fetchService();
       fetchBookedSlots();
+      fetchMasters();  // Загрузка мастеров
     }
   }, [serviceId]);
 
@@ -68,20 +86,15 @@ export default function ServiceDetail() {
       return;
     }
 
-    // Проверка формата номера телефона (пример для формата +7 (xxx) xxx-xx-xx)
     const phoneRegex = /^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$/;
     if (!phoneRegex.test(clientPhone)) {
       alert('Неверный формат номера телефона. Используйте формат: +7 (xxx) xxx-xx-xx');
       return;
     }
 
-    // Преобразуем локальное время в UTC
     const localDate = selectedDate;  // Время, выбранное на фронтенде
     const offset = localDate.getTimezoneOffset();  // Получаем смещение от UTC в минутах
-
-    // Корректируем время, чтобы оно было в UTC
     localDate.setMinutes(localDate.getMinutes() - offset);  // Применяем смещение для перевода в UTC
-
     const utcDate = localDate.toISOString();  // Преобразуем в строку ISO в формате UTC
 
     try {
@@ -90,6 +103,8 @@ export default function ServiceDetail() {
         client_name: clientName,
         client_phone: clientPhone,
         appointment_time: utcDate,  // Отправляем время в UTC
+        comment: comment,  // Отправляем комментарий
+        master_id: masterId,  // Отправляем ID мастера
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -105,10 +120,7 @@ export default function ServiceDetail() {
   const timeFilter = (time) => {
     const startOfDay = setHours(setMinutes(new Date(), 0), 9); // 9:00 AM
     const endOfDay = setHours(setMinutes(new Date(), 45), 20); // 20:45 PM (8:45 PM)
-    
-    // Преобразуем время в строку для корректного сравнения
     const timeStr = time.toISOString();
-    
     const isBooked = bookedSlots.includes(timeStr); // Проверка, забронирован ли слот
 
     if (isBooked) {
@@ -116,10 +128,8 @@ export default function ServiceDetail() {
     }
 
     if (isToday(time)) {
-      // Для сегодняшнего дня проверяем, что время попадает в рабочие часы
       return isAfter(time, startOfDay) && isBefore(time, endOfDay);
     } else {
-      // Для будущих дней, проверяем рабочие часы с 9:00 до 20:45
       const futureDayStart = setHours(setMinutes(time, 0), 9); // Начало рабочего дня (9:00 AM)
       const futureDayEnd = setHours(setMinutes(time, 0), 21); // Конец рабочего дня (20:45 PM)
       return isAfter(time, futureDayStart) && isBefore(time, futureDayEnd);
@@ -129,10 +139,23 @@ export default function ServiceDetail() {
   const highlightBookedSlots = (date) => {
     return bookedSlots.some(slot => {
       const slotDate = new Date(slot);
-      // Сравниваем только дату, игнорируя время
       return slotDate.toDateString() === date.toDateString();
     });
   };
+
+const handlePhoneChange = (e) => {
+  let value = e.target.value.replace(/\D/g, ''); // Убираем все нецифровые символы
+  if (value.length > 11) {
+    value = value.slice(0, 11);  // Ограничиваем максимальное количество цифр (11 символов)
+  }
+
+  // Форматируем номер как +7 (xxx) xxx-xx-xx
+  const formattedValue = value.length > 1 
+    ? `+7(${value.slice(1, 4)})${value.slice(4, 7)}-${value.slice(7, 9)}-${value.slice(9, 11)}`
+    : `+7(${value.slice(1)}`;
+
+  setClientPhone(formattedValue); // Обновляем значение
+};
 
   if (loading) {
     return <div>Загрузка...</div>;
@@ -143,10 +166,10 @@ export default function ServiceDetail() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white text-black px-4">
-      <div className="bg-gray-100 p-8 rounded shadow-md w-full max-w-3xl">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
+      <div className="bg-gray-800 p-8 rounded shadow-md w-full max-w-3xl">
         <h1 className="text-3xl font-bold mb-6 text-center">{service?.name}</h1>
-        <p className="text-gray-700">{service?.description}</p>
+        <p className="text-gray-300">{service?.description}</p>
         <p className="text-gray-500 mt-4">Цена: {service?.price} ₽</p>
 
         <h2 className="text-2xl mt-6 mb-4">Записаться на услугу</h2>
@@ -154,7 +177,7 @@ export default function ServiceDetail() {
           <input
             type="text"
             placeholder="Ваше имя"
-            className="w-full px-4 py-2 rounded border"
+            className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             required
@@ -162,9 +185,9 @@ export default function ServiceDetail() {
           <input
             type="tel"
             placeholder="+7 (xxx) xxx-xx-xx"
-            className="w-full px-4 py-2 rounded border"
+            className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
             value={clientPhone}
-            onChange={(e) => setClientPhone(e.target.value)}  // Обработчик изменения номера телефона
+            onChange={handlePhoneChange}  // Обработчик изменения номера телефона
             required
           />
 
@@ -178,7 +201,7 @@ export default function ServiceDetail() {
               timeCaption="Время"
               dateFormat="Pp" // Формат отображаемой даты и времени
               minDate={new Date()} // Минимальная дата - текущая
-              className="w-full px-4 py-2 rounded border" // Стиль для календаря
+              className="w-full px-4 py-2 rounded border bg-gray-700 text-white" // Стиль для календаря
               timeFormat="HH:mm" // 24-часовой формат
               locale={ru} // Устанавливаем русский локаль для отображения
               filterTime={timeFilter} // Применяем фильтр времени
@@ -187,9 +210,36 @@ export default function ServiceDetail() {
             />
           </div>
 
+          <div className="mb-4">
+            <label htmlFor="master" className="block text-lg">Выберите мастера:</label>
+            <select
+              value={masterId}
+              onChange={(e) => setMasterId(e.target.value)}
+              className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
+              required
+            >
+              <option value="">Выберите мастера</option>
+              {masters.map((master) => (
+                <option key={master.id} value={master.id}>
+                  {master.username}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="comment" className="block text-lg">Комментарий (необязательно):</label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
+              placeholder="Ваш комментарий"
+            />
+          </div>
+
           <button
             type="submit"
-            className="w-full bg-black hover:bg-gray-900 text-white py-2 rounded"
+            className="w-full bg-[#00baff] hover:bg-[#8a2be2] text-white py-2 rounded"
           >
             Записаться
           </button>
@@ -197,4 +247,4 @@ export default function ServiceDetail() {
       </div>
     </div>
   );
-}
+} 
