@@ -107,6 +107,6 @@ h1, h2, h3 {
 
 /* CSS для зеленого статуса (выполнен) */
 .status-completed {
-  color: green;
+  color: #00baff;
   font-weight: bold;
 }
