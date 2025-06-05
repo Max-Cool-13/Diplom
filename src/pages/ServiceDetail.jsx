@@ -143,19 +143,19 @@ export default function ServiceDetail() {
     });
   };
 
-const handlePhoneChange = (e) => {
-  let value = e.target.value.replace(/\D/g, ''); // Убираем все нецифровые символы
-  if (value.length > 11) {
-    value = value.slice(0, 11);  // Ограничиваем максимальное количество цифр (11 символов)
-  }
+  const handlePhoneChange = (e) => {
+    let value = e.target.value.replace(/\D/g, ''); // Убираем все нецифровые символы
+    if (value.length > 11) {
+      value = value.slice(0, 11);  // Ограничиваем максимальное количество цифр (11 символов)
+    }
 
-  // Форматируем номер как +7 (xxx) xxx-xx-xx
-  const formattedValue = value.length > 1 
-    ? `+7(${value.slice(1, 4)})${value.slice(4, 7)}-${value.slice(7, 9)}-${value.slice(9, 11)}`
-    : `+7(${value.slice(1)}`;
+    // Форматируем номер как +7 (xxx) xxx-xx-xx
+    const formattedValue = value.length > 1 
+      ? `+7(${value.slice(1, 4)})${value.slice(4, 7)}-${value.slice(7, 9)}-${value.slice(9, 11)}`
+      : `+7(${value.slice(1)}`;
 
-  setClientPhone(formattedValue); // Обновляем значение
-};
+    setClientPhone(formattedValue); // Обновляем значение
+  };
 
   if (loading) {
     return <div>Загрузка...</div>;
@@ -168,16 +168,16 @@ const handlePhoneChange = (e) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
       <div className="bg-gray-800 p-8 rounded shadow-md w-full max-w-3xl">
-        <h1 className="text-3xl font-bold mb-6 text-center">{service?.name}</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-white">{service?.name}</h1>
         <p className="text-gray-300">{service?.description}</p>
-        <p className="text-gray-500 mt-4">Цена: {service?.price} ₽</p>
+        <p className="text-[#00baff] text-xl font-semibold mt-4">Цена: {service?.price} ₽</p> {/* Выделение цены */}
 
-        <h2 className="text-2xl mt-6 mb-4">Записаться на услугу</h2>
+        <h2 className="text-2xl mt-6 mb-4 text-white">Записаться на услугу</h2> {/* Выделение заголовка */}
         <form onSubmit={handleAppointment} className="space-y-4">
           <input
             type="text"
             placeholder="Ваше имя"
-            className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
+            className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:ring-2 focus:ring-[#8a2be2]"
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             required
@@ -185,14 +185,14 @@ const handlePhoneChange = (e) => {
           <input
             type="tel"
             placeholder="+7 (xxx) xxx-xx-xx"
-            className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
+            className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:ring-2 focus:ring-[#8a2be2]"
             value={clientPhone}
             onChange={handlePhoneChange}  // Обработчик изменения номера телефона
             required
           />
 
           <div className="mb-4">
-            <label htmlFor="appointment-time" className="block text-lg">Выберите дату и время:</label>
+            <label htmlFor="appointment-time" className="block text-lg text-white">Выберите дату и время:</label>
             <DatePicker
               selected={selectedDate}
               onChange={(date) => setSelectedDate(date)} // Обработчик изменения даты
@@ -201,7 +201,7 @@ const handlePhoneChange = (e) => {
               timeCaption="Время"
               dateFormat="Pp" // Формат отображаемой даты и времени
               minDate={new Date()} // Минимальная дата - текущая
-              className="w-full px-4 py-2 rounded border bg-gray-700 text-white" // Стиль для календаря
+              className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white" // Стиль для календаря
               timeFormat="HH:mm" // 24-часовой формат
               locale={ru} // Устанавливаем русский локаль для отображения
               filterTime={timeFilter} // Применяем фильтр времени
@@ -211,11 +211,11 @@ const handlePhoneChange = (e) => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="master" className="block text-lg">Выберите мастера:</label>
+            <label htmlFor="master" className="block text-lg text-white">Выберите мастера:</label>
             <select
               value={masterId}
               onChange={(e) => setMasterId(e.target.value)}
-              className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
+              className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white"
               required
             >
               <option value="">Выберите мастера</option>
@@ -228,11 +228,11 @@ const handlePhoneChange = (e) => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="comment" className="block text-lg">Комментарий (необязательно):</label>
+            <label htmlFor="comment" className="block text-lg text-white">Комментарий (необязательно):</label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
+              className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white"
               placeholder="Ваш комментарий"
             />
           </div>
@@ -247,4 +247,4 @@ const handlePhoneChange = (e) => {
       </div>
     </div>
   );
-} 
+}

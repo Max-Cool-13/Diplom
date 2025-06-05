@@ -157,7 +157,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">
       <div className="bg-gray-800 p-8 rounded shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center text-[#8a2be2]">Профиль</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center text-[#00baff]">Профиль</h2>
         {user ? (
           <div>
             {/* Если редактируем профиль, показываем форму редактирования */}
@@ -226,7 +226,7 @@ const Profile = () => {
               </div>
             )}
 
-            <h3 className="text-2xl mt-6 mb-4 text-[#8a2be2]">История записей</h3>
+            <h3 className="text-2xl mt-6 mb-4 text-[#00baff]">История записей</h3>
             <div className="space-y-4">
               {appointments.length > 0 ? (
                 appointments.map((appointment) => (
