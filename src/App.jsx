@@ -11,6 +11,8 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 
+
+
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
 

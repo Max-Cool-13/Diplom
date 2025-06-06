@@ -8,16 +8,6 @@ import { ru } from 'date-fns/locale';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const holidays = [
-  { day: 1, month: 1, name: 'Новый год' },
-  { day: 7, month: 1, name: 'Рождество Христово' },
-  { day: 8, month: 3, name: 'Международный женский день' },
-  { day: 1, month: 5, name: 'Праздник Весны и Труда' },
-  { day: 9, month: 5, name: 'День Победы' },
-  { day: 12, month: 6, name: 'День России' },
-  { day: 4, month: 11, name: 'День народного единства' },
-];
-
 export default function ServiceDetail() {
   const { serviceId } = useParams();
   const [service, setService] = useState(null);
@@ -26,7 +16,7 @@ export default function ServiceDetail() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [clientName, setClientName] = useState('');
   const [clientPhone, setClientPhone] = useState('');
-  const [bookedSlots, setBookedSlots] = useState([]);
+  const [bookedSlots, setBookedSlots] = useState([]); // Занятые слоты
   const [comment, setComment] = useState('');
   const [masterId, setMasterId] = useState(null);  // Поле для выбора мастера
   const [masters, setMasters] = useState([]);  // Список мастеров
@@ -50,7 +40,7 @@ export default function ServiceDetail() {
           params: { service_id: serviceId }
         });
         const slots = response.data.map(appointment => appointment.appointment_time);
-        setBookedSlots(slots);
+        setBookedSlots(slots); // Сохраняем занятые слоты
       } catch (err) {
         console.error('Ошибка при загрузке забронированных слотов', err);
       }
@@ -77,6 +67,77 @@ export default function ServiceDetail() {
     }
   }, [serviceId]);
 
+  // Проверка доступности времени
+  const checkAvailability = async (serviceId, selectedDate) => {
+    try {
+      const response = await axios.get(`${API_URL}/appointments/check`, {
+        params: {
+          service_id: serviceId,
+          appointment_time: selectedDate.toISOString(),
+        },
+      });
+
+      return response.data;  // Если true, время доступно
+    } catch (err) {
+      console.error('Ошибка при проверке занятости времени', err);
+      return false;  // Если произошла ошибка, предполагаем, что время занято
+    }
+  };
+
+  // Обработчик изменения времени
+  const handleDateChange = async (date) => {
+    setSelectedDate(date);  // Устанавливаем выбранную дату
+
+    const isAvailable = await checkAvailability(serviceId, date);
+    if (!isAvailable) {
+      alert('Это время уже занято. Пожалуйста, выберите другое.');
+    }
+  };
+
+  // Фильтрация времени для блокировки забронированных слотов
+  const timeFilter = (time) => {
+    const startOfDay = setHours(setMinutes(new Date(), 0), 9); // 9:00 AM
+    const endOfDay = setHours(setMinutes(new Date(), 45), 20); // 20:45 PM (8:45 PM)
+    const timeStr = time.toISOString();
+    const isBooked = bookedSlots.includes(timeStr); // Проверка, забронирован ли слот
+
+    if (isBooked) {
+      return false; // Блокируем забронированные слоты
+    }
+
+    if (isToday(time)) {
+      return isAfter(time, startOfDay) && isBefore(time, endOfDay);
+    } else {
+      const futureDayStart = setHours(setMinutes(time, 0), 9); // Начало рабочего дня (9:00 AM)
+      const futureDayEnd = setHours(setMinutes(time, 0), 21); // Конец рабочего дня (20:45 PM)
+      return isAfter(time, futureDayStart) && isBefore(time, futureDayEnd);
+    }
+  };
+
+  // Подсвечиваем забронированные дни
+  const highlightBookedSlots = (date) => {
+    return bookedSlots.some(slot => {
+      const slotDate = new Date(slot);
+      return slotDate.toDateString() === date.toDateString();
+    });
+  };
+
+  // Обработчик изменения номера телефона
+  const handlePhoneChange = (e) => {
+    let value = e.target.value.replace(/\D/g, ''); // Убираем все нецифровые символы
+    if (value.length > 11) {
+      value = value.slice(0, 11);  // Ограничиваем максимальное количество цифр (11 символов)
+    }
+
+    // Форматируем номер как +7 (xxx) xxx-xx-xx
+    const formattedValue = value.length > 1 
+      ? `+7(${value.slice(1, 4)})${value.slice(4, 7)}-${value.slice(7, 9)}-${value.slice(9, 11)}`
+      : `+7(${value.slice(1)}`;
+
+    setClientPhone(formattedValue); // Обновляем значение
+  };
+
+  // Обработчик отправки формы для записи
   const handleAppointment = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -117,46 +178,6 @@ export default function ServiceDetail() {
     }
   };
 
-  const timeFilter = (time) => {
-    const startOfDay = setHours(setMinutes(new Date(), 0), 9); // 9:00 AM
-    const endOfDay = setHours(setMinutes(new Date(), 45), 20); // 20:45 PM (8:45 PM)
-    const timeStr = time.toISOString();
-    const isBooked = bookedSlots.includes(timeStr); // Проверка, забронирован ли слот
-
-    if (isBooked) {
-      return false; // Блокируем забронированные слоты
-    }
-
-    if (isToday(time)) {
-      return isAfter(time, startOfDay) && isBefore(time, endOfDay);
-    } else {
-      const futureDayStart = setHours(setMinutes(time, 0), 9); // Начало рабочего дня (9:00 AM)
-      const futureDayEnd = setHours(setMinutes(time, 0), 21); // Конец рабочего дня (20:45 PM)
-      return isAfter(time, futureDayStart) && isBefore(time, futureDayEnd);
-    }
-  };
-
-  const highlightBookedSlots = (date) => {
-    return bookedSlots.some(slot => {
-      const slotDate = new Date(slot);
-      return slotDate.toDateString() === date.toDateString();
-    });
-  };
-
-  const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ''); // Убираем все нецифровые символы
-    if (value.length > 11) {
-      value = value.slice(0, 11);  // Ограничиваем максимальное количество цифр (11 символов)
-    }
-
-    // Форматируем номер как +7 (xxx) xxx-xx-xx
-    const formattedValue = value.length > 1 
-      ? `+7(${value.slice(1, 4)})${value.slice(4, 7)}-${value.slice(7, 9)}-${value.slice(9, 11)}`
-      : `+7(${value.slice(1)}`;
-
-    setClientPhone(formattedValue); // Обновляем значение
-  };
-
   if (loading) {
     return <div>Загрузка...</div>;
   }
@@ -195,13 +216,13 @@ export default function ServiceDetail() {
             <label htmlFor="appointment-time" className="block text-lg text-white">Выберите дату и время:</label>
             <DatePicker
               selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)} // Обработчик изменения даты
+              onChange={handleDateChange} // Обработчик изменения даты
               showTimeSelect
               timeIntervals={15} // Шаг времени (по 15 минут)
               timeCaption="Время"
               dateFormat="Pp" // Формат отображаемой даты и времени
               minDate={new Date()} // Минимальная дата - текущая
-              className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white" // Стиль для календаря
+              className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white"
               timeFormat="HH:mm" // 24-часовой формат
               locale={ru} // Устанавливаем русский локаль для отображения
               filterTime={timeFilter} // Применяем фильтр времени
