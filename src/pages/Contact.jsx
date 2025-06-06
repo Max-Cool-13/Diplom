@@ -4,7 +4,7 @@ export default function Contact() {
   return (
     <div className="bg-gray-900 text-white py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-extrabold text-center text-[#00baff] mb-8">
+        <h1 className="text-4xl font-extrabold text-center text-white  mb-8">
           Контакты
         </h1>
 
@@ -16,12 +16,12 @@ export default function Contact() {
             <span className="font-semibold">📞 Телефон:</span> +7 (929) 749-01-01
           </p>
           <p className="text-lg text-gray-300 mb-4">
-            <span className="font-semibold">📧 Email:</span> info@barbershopn1.ru
+            <span className="font-semibold">📧 Email:</span> barberN1@mail.ru
           </p>
 
           <div className="flex space-x-6 justify-center">
             <a
-              href="https://vk.com/your_vk_page"
+              href="https://vk.com/barbershopnumberone"
               target="_blank"
               rel="noopener noreferrer"
               className="text-2xl text-[#00baff] hover:text-[#8a2be2] transition duration-300"
@@ -29,7 +29,7 @@ export default function Contact() {
               <FaVk />
             </a>
             <a
-              href="https://t.me/your_telegram"
+              href="https://t.me/mashunstrik"
               target="_blank"
               rel="noopener noreferrer"
               className="text-2xl text-[#00baff] hover:text-[#8a2be2] transition duration-300"
@@ -37,7 +37,7 @@ export default function Contact() {
               <FaTelegramPlane />
             </a>
             <a
-              href="https://wa.me/79001234567"
+              href="https://wa.me/79297490101"
               target="_blank"
               rel="noopener noreferrer"
               className="text-2xl text-[#00baff] hover:text-[#8a2be2] transition duration-300"
@@ -45,7 +45,7 @@ export default function Contact() {
               <FaWhatsapp />
             </a>
             <a
-              href="mailto:info@barbershopn1.ru"
+              href="mailto:barberN1@mail.ru"
               className="text-2xl text-[#00baff] hover:text-[#8a2be2] transition duration-300"
             >
               <FaEnvelope />
@@ -54,7 +54,7 @@ export default function Contact() {
         </div>
 
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold text-center text-[#00baff] mb-6">
+          <h2 className="text-2xl font-semibold text-center text-white  mb-6">
             Напишите нам
           </h2>
           <form className="space-y-4">

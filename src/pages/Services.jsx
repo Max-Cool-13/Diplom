@@ -94,9 +94,9 @@ export default function Services() {
 
   return (
     <div className="bg-gray-900 min-h-screen py-12 text-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.h1
-          className="text-4xl font-extrabold text-center text-[#00baff] mb-8" // Голубой цвет для заголовка
+          className="text-4xl font-extrabold text-center text-white mb-8"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
@@ -117,42 +117,54 @@ export default function Services() {
             {services.length === 0 ? (
               <div>Услуги не найдены</div>
             ) : (
-              <ul className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 {services.map((service) => (
-                  <div key={service.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-lg shadow hover:bg-gray-700">
-                    <Link to={`/service/${service.id}`} className="w-full text-[#00baff] hover:text-[#8a2be2] transition-all duration-300">
-                      <h2 className="text-xl font-semibold">{service.name}</h2>
+                  <motion.div
+                    key={service.id}
+                    className="bg-gray-800 p-6 rounded-lg shadow hover:bg-gray-700 transition-all duration-300"
+                    whileHover={{ scale: 1.05 }} // При наведении карточка увеличивается
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Link to={`/service/${service.id}`} className="w-full">
+                      <h2 className="text-3xl font-bold text-[#00baff] mb-2">{service.name}</h2> {/* Увеличенный шрифт для названия */}
                       <p className="text-gray-300">{service.description}</p>
-                      <p className="text-gray-500">Цена: {service.price} ₽</p>
+                      <p className="text-white text-xl font-semibold mt-2">Цена: {service.price} ₽</p> {/* Увеличен размер и цвет для цены */}
                     </Link>
 
                     {/* Кнопка удаления для админа */}
                     {isAdmin && (
-                      <button
+                      <Link
+                      to={`/service/${service.id}`}
+                      className="w-full bg-[#00baff] hover:bg-[#8a2be2] text-white py-2 rounded mt-4 text-center block"
+                    >
+                      Выбрать услугу
+                    </Link>
+                    )}
+                    {/* Кнопка записи на услугу */}
+                    <button
                         onClick={() => handleDeleteService(service.id)}
-                        className="text-red-500 hover:text-red-700 ml-4"
+                        className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded mt-4"
                       >
                         Удалить
                       </button>
-                    )}
-                  </div>
+                  </motion.div>
                 ))}
-              </ul>
+              </div>
             )}
           </motion.div>
         )}
 
         {/* Панель добавления услуги для администратора */}
         {isAdmin && (
-          <div className="mt-6 bg-gray-800 p-8 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-[#00baff]">Добавить услугу</h2> {/* Голубой цвет для заголовка */}
+          <div className="mt-12 bg-gray-800 p-8 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold mb-4 text-white">Добавить услугу</h2>
             <form onSubmit={handleAddService} className="space-y-4">
               <input
                 type="text"
                 placeholder="Название услуги"
                 value={newService.name}
                 onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
+                className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#8a2be2]"
                 required
               />
               <input
@@ -160,7 +172,7 @@ export default function Services() {
                 placeholder="Описание услуги"
                 value={newService.description}
                 onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-                className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
+                className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#8a2be2]"
                 required
               />
               <input
@@ -168,12 +180,12 @@ export default function Services() {
                 placeholder="Цена"
                 value={newService.price}
                 onChange={(e) => setNewService({ ...newService, price: e.target.value })}
-                className="w-full px-4 py-2 rounded border bg-gray-700 text-white"
+                className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#8a2be2]"
                 required
               />
               <button
                 type="submit"
-                className="w-full bg-[#00baff] hover:bg-[#0095cc] text-white py-2 rounded"
+                className="w-full bg-[#00baff] hover:bg-[#8a2be2] text-white py-2 rounded"
               >
                 Добавить услугу
               </button>
