@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // Проверка авторизации
+  const [isAdmin, setIsAdmin] = useState(false); // Проверка, является ли пользователь администратором
   const [isOpen, setIsOpen] = useState(false); // Для мобильного меню
   const [isModalOpen, setIsModalOpen] = useState(false); // Для модального окна
   const navigate = useNavigate();
@@ -12,20 +14,39 @@ const Navbar = () => {
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token); // Если токен есть, то авторизован
 
+    // Проверка роли администратора
+    const checkAdminStatus = async () => {
+      if (token) {
+        try {
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.data.role === "admin") {
+            setIsAdmin(true); // Если роль администратора, показываем панель
+          }
+        } catch (err) {
+          console.error("Ошибка при проверке роли администратора", err);
+        }
+      }
+    };
+
     // Добавляем событие для прослушивания изменений в localStorage
     const handleStorageChange = () => {
       const updatedToken = localStorage.getItem("token");
       setIsAuthenticated(!!updatedToken); // Обновляем состояние авторизации
     };
 
-    // Слушаем изменения localStorage
+    checkAdminStatus();
     window.addEventListener("storage", handleStorageChange);
 
     // Убираем слушатель при размонтировании компонента
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, []); // Пустой массив зависимостей, чтобы useEffect сработал только один раз
+  }, []);
 
   // Функция для показа модального окна
   const handleLogoutClick = () => {
@@ -65,7 +86,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        <ul className="hidden md:flex space-x-6 items-center ml-auto"> {/* Добавляем ml-auto для выравнивания ссылок справа */}
+        <ul className="hidden md:flex space-x-6 items-center ml-auto">
           <li>
             <Link
               to="/"
@@ -117,6 +138,16 @@ const Navbar = () => {
                   Профиль
                 </Link>
               </li>
+              {isAdmin && (
+                <li>
+                  <Link
+                    to="/admin"
+                    className="text-white hover:text-[#00baff] text-shadow transition duration-300"
+                  >
+                    Панель администратора
+                  </Link>
+                </li>
+              )}
               <li>
                 <button
                   onClick={handleLogoutClick} // Открываем модальное окно
@@ -199,6 +230,17 @@ const Navbar = () => {
                   Профиль
                 </Link>
               </li>
+              {isAdmin && (
+                <li>
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsOpen(false)}
+                    className="block text-white hover:text-[#00baff] text-shadow transition duration-300"
+                  >
+                    Панель администратора
+                  </Link>
+                </li>
+              )}
               <li className="flex justify-center">
                 <button
                   onClick={handleLogoutClick} // Открываем модальное окно
