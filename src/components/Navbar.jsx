@@ -67,7 +67,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-black text-white shadow-lg z-50">
+    <nav className="fixed top-0 left-0 w-full bg-gray-950/70  text-white shadow-lg z-50">
       <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* Текст "Барбершоп N1" с градиентом */}
         <Link
