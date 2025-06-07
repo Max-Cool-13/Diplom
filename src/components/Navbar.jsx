@@ -7,7 +7,12 @@ const Navbar = () => {
   const [isAdmin, setIsAdmin] = useState(false); // Проверка, является ли пользователь администратором
   const [isOpen, setIsOpen] = useState(false); // Для мобильного меню
   const [isModalOpen, setIsModalOpen] = useState(false); // Для модального окна
+  const [isDarkMode, setIsDarkMode] = useState(true); // Состояние для тёмной/светлой темы
   const navigate = useNavigate();
+
+  const textShadowStyle = isDarkMode
+    ? "0 0 15px rgba(0, 186, 255, 0.8), 0 0 30px rgba(0, 186, 255, 0.6)" // для тёмной темы
+    : "0 0 15px rgba(138, 43, 226, 0.8), 0 0 30px rgba(138, 43, 226, 0.6)"; // для светлой темы
 
   // Следим за изменениями в localStorage
   useEffect(() => {
@@ -66,13 +71,20 @@ const Navbar = () => {
     setIsModalOpen(false); // Закрытие модального окна
   };
 
+  // Функция переключения темы
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode); // Переключаем состояние темы
+  };
+
   return (
-    <nav className="fixed top-0 left-0 w-full bg-gray-950/70  text-white shadow-lg z-50">
+    <nav
+      className={`fixed top-0 left-0 w-full ${isDarkMode ? "bg-gray-950/85" : "bg-white/85"} text-white shadow-lg z-50`}
+    >
       <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
         {/* Текст "Барбершоп N1" с градиентом */}
         <Link
           to="/"
-          className="text-2xl font-bold barbershop-text text-shadow transition duration-300"
+          className={`text-2xl font-bold ${isDarkMode ? "text-white" : "text-gray-600"} barbershop-text text-shadow transition duration-300 ${isDarkMode ? "text-shadow-lg" : "text-shadow-md"}`}
         >
           Барбершоп N1
         </Link>
@@ -80,7 +92,7 @@ const Navbar = () => {
         <div className="md:hidden">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-white text-2xl hover:text-[#00B9FF]"
+            className={`text-2xl ${isDarkMode ? "text-white" : "text-gray-600"} hover:text-[#00B9FF]`}
           >
             ☰
           </button>
@@ -90,7 +102,8 @@ const Navbar = () => {
           <li>
             <Link
               to="/"
-              className="text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`text-xl ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               Главная
             </Link>
@@ -98,7 +111,8 @@ const Navbar = () => {
           <li>
             <Link
               to="/about"
-              className="text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`text-xl ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               О нас
             </Link>
@@ -106,7 +120,8 @@ const Navbar = () => {
           <li>
             <Link
               to="/services"
-              className="text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`text-xl ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               Услуги
             </Link>
@@ -114,7 +129,8 @@ const Navbar = () => {
           <li>
             <Link
               to="/marketplace"
-              className="text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`text-xl ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               Магазин
             </Link>
@@ -122,7 +138,8 @@ const Navbar = () => {
           <li>
             <Link
               to="/contact"
-              className="text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`text-xl ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               Контакты
             </Link>
@@ -133,7 +150,8 @@ const Navbar = () => {
               <li>
                 <Link
                   to="/profile"
-                  className="text-white hover:text-[#00baff] text-shadow transition duration-300"
+                  className={`text-xl ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+                  style={{ textShadow: textShadowStyle }}
                 >
                   Профиль
                 </Link>
@@ -142,7 +160,8 @@ const Navbar = () => {
                 <li>
                   <Link
                     to="/admin"
-                    className="text-white hover:text-[#00baff] text-shadow transition duration-300"
+                    className={`text-xl ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+                    style={{ textShadow: textShadowStyle }}
                   >
                     Панель администратора
                   </Link>
@@ -151,7 +170,8 @@ const Navbar = () => {
               <li>
                 <button
                   onClick={handleLogoutClick} // Открываем модальное окно
-                  className="text-white hover:text-[#ff0000] text-shadow transition duration-300"
+                  className={`text-xl ${isDarkMode ? "text-white hover:text-[#ff0000]" : "text-gray-600 hover:text-[#ff0000]"} text-shadow transition duration-300`}
+                  style={{ textShadow: textShadowStyle }}
                 >
                   Выйти
                 </button>
@@ -161,23 +181,34 @@ const Navbar = () => {
             <li>
               <Link
                 to="/login"
-                className="text-white hover:text-[#8a2be299] text-shadow transition duration-300"
+                onClick={() => setIsOpen(false)}
+                className={`text-xl ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+                style={{ textShadow: textShadowStyle }}
               >
                 Авторизация
               </Link>
             </li>
           )}
         </ul>
+
+        {/* Кнопка для переключения темы */}
+        <button
+          onClick={toggleTheme}
+          className={`text-white px-6 py-2 rounded-full focus:outline-none ${isDarkMode ? "bg-[#00baff]" : "bg-[#8a2be2]"} ml-4`}
+        >
+          {isDarkMode ? "☾" : "☼"}
+        </button>
       </div>
 
       {/* Мобильное меню */}
       {isOpen && (
-        <ul className="md:hidden bg-black border-t border-gray-700 px-4 pb-4 space-y-2 text-center">
+        <ul className={isDarkMode ? "bg-gray-950/20 px-4 pb-4 space-y-2 text-center transform translate-y-0 transition-all duration-500" : "bg-white/20 px-4 pb-4 space-y-2 text-center transform translate-y-0 transition-all duration-500"}>
           <li>
             <Link
               to="/"
               onClick={() => setIsOpen(false)}
-              className="block text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`block ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               Главная
             </Link>
@@ -186,7 +217,8 @@ const Navbar = () => {
             <Link
               to="/about"
               onClick={() => setIsOpen(false)}
-              className="block text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`block ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               О нас
             </Link>
@@ -195,7 +227,8 @@ const Navbar = () => {
             <Link
               to="/services"
               onClick={() => setIsOpen(false)}
-              className="block text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`block ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               Услуги
             </Link>
@@ -204,7 +237,8 @@ const Navbar = () => {
             <Link
               to="/marketplace"
               onClick={() => setIsOpen(false)}
-              className="block text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`block ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               Магазин
             </Link>
@@ -213,7 +247,8 @@ const Navbar = () => {
             <Link
               to="/contact"
               onClick={() => setIsOpen(false)}
-              className="block text-white hover:text-[#00baff] text-shadow transition duration-300"
+              className={`block ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+              style={{ textShadow: textShadowStyle }}
             >
               Контакты
             </Link>
@@ -225,7 +260,8 @@ const Navbar = () => {
                 <Link
                   to="/profile"
                   onClick={() => setIsOpen(false)}
-                  className="block text-white hover:text-[#00baff] text-shadow transition duration-300"
+                  className={`block ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+                  style={{ textShadow: textShadowStyle }}
                 >
                   Профиль
                 </Link>
@@ -235,7 +271,8 @@ const Navbar = () => {
                   <Link
                     to="/admin"
                     onClick={() => setIsOpen(false)}
-                    className="block text-white hover:text-[#00baff] text-shadow transition duration-300"
+                    className={`block ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+                    style={{ textShadow: textShadowStyle }}
                   >
                     Панель администратора
                   </Link>
@@ -244,7 +281,8 @@ const Navbar = () => {
               <li className="flex justify-center">
                 <button
                   onClick={handleLogoutClick} // Открываем модальное окно
-                  className="block text-white hover:text-[#ff0000] text-shadow transition duration-300"
+                  className={`block ${isDarkMode ? "text-white hover:text-[#ff0000]" : "text-gray-600 hover:text-[#ff0000]"} text-shadow transition duration-300`}
+                  style={{ textShadow: textShadowStyle }}
                 >
                   Выйти
                 </button>
@@ -255,7 +293,8 @@ const Navbar = () => {
               <Link
                 to="/login"
                 onClick={() => setIsOpen(false)}
-                className="block text-white hover:text-[#00baff] text-shadow transition duration-300"
+                className={`block ${isDarkMode ? "text-white hover:text-[#00B9FF]" : "text-gray-600 hover:text-[#8a2be2]"} text-shadow transition duration-300`}
+                style={{ textShadow: textShadowStyle }}
               >
                 Авторизация
               </Link>
@@ -267,7 +306,7 @@ const Navbar = () => {
       {/* Модальное окно для подтверждения выхода */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+              <div className={`${isDarkMode ? "bg-gray-800 text-white" : "bg-white text-gray-800"} p-6 rounded-lg shadow-lg max-w-sm w-full`}>
             <p className="text-lg mb-4 text-center">Вы уверены, что хотите выйти?</p>
             <div className="flex justify-between space-x-2">
               <button

@@ -14,6 +14,7 @@ import TopMasters from './pages/TopMasters';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
+  const [isDarkMode, setIsDarkMode] = useState(localStorage.getItem('theme') === 'dark'); // Изменение темы
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -25,14 +26,22 @@ function App() {
     };
   }, []);
 
+  // Функция для переключения темы
+  const toggleTheme = () => {
+    const newTheme = isDarkMode ? 'light' : 'dark';
+    setIsDarkMode(!isDarkMode);
+    localStorage.setItem('theme', newTheme); // Сохраняем текущую тему в localStorage
+    document.body.classList.toggle('dark', !isDarkMode); // Применяем класс к body для изменения темы
+  };
+
   const ProtectedRoute = ({ element }) => {
     return token ? element : <Navigate to="/login" />;
   };
 
   return (
-    <div className="bg-black min-h-screen text-white">
-      <Navbar />
-      <div className="mt-16 px-4">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'} text-white`}>
+      <Navbar toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
+      <div className={`mt-16 px-4 ${isDarkMode ? 'text-white' : 'text-black'}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />

@@ -15,7 +15,6 @@ a, .highlight, .button {
 }
 
 a:hover, .highlight:hover, .button:hover {
-  color: #ffffff; /* Белый цвет при наведении */
   text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6), 0 0 45px rgba(255, 255, 255, 0.5); /* Белый эффект при наведении */
 }
 
@@ -82,7 +81,6 @@ h1, h2, h3 {
 .barbershop-text {
   font-size: 2em; /* Уменьшили размер текста */
   font-weight: bold;
-  color: white; /* Белый текст */
   text-shadow: 
     0 0 10px rgba(0, 186, 255, 0.8),  /* Голубая тень */
     0 0 20px rgba(0, 186, 255, 0.6), 
