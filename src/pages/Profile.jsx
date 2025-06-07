@@ -4,6 +4,7 @@ import api from '../api'; // Импортируем настроенный axios
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]); // Для хранения истории записей
+  const [users, setUsers] = useState([]); // Для хранения списка пользователей
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false); // Состояние для редактирования профиля
@@ -47,6 +48,16 @@ const Profile = () => {
               },
             });
             setAppointments(appointmentResponse.data); // Сохраняем записи мастера
+          }
+
+          // Загружаем список всех пользователей только для админа
+          if (response.data.role === 'admin') {
+            const userResponse = await api.get('/users/', {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
+            });
+            setUsers(userResponse.data); // Сохраняем всех пользователей
           }
         } catch (err) {
           setError('Ошибка получения данных пользователя или истории записей');
@@ -113,39 +124,21 @@ const Profile = () => {
     }
   };
 
-  // Функция для удаления записи
-  const deleteAppointment = async (appointmentId) => {
+  const handleDeleteAppointment = async (appointmentId) => {
     const token = localStorage.getItem('token');
-    const appointment = appointments.find((appointment) => appointment.id === appointmentId);
-
-    // Мастера не могут удалять записи
-    if (user.role === 'master') {
-      alert('Мастера не могут удалять записи');
-      return; // Мастера не могут удалять записи
-    }
-
-    // Клиенты не могут удалять записи с выполненным статусом
-    if (user.role === 'client' && appointment.status === 'completed') {
-      alert('Клиенты не могут удалять записи с выполненным статусом');
-      return; // Клиенты не могут удалять записи с выполненным статусом
-    }
-
     try {
       await api.delete(`/appointments/${appointmentId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
-      setAppointments((prevAppointments) =>
-        prevAppointments.filter((appointment) => appointment.id !== appointmentId)
-      );
+      setAppointments(appointments.filter((appointment) => appointment.id !== appointmentId));
       alert('Запись успешно удалена');
     } catch (err) {
       setError('Не удалось удалить запись');
     }
   };
 
-  // Открытие модального окна
   const openModal = (appointment) => {
     setSelectedAppointment(appointment); // Устанавливаем выбранную запись
     setModalOpen(true); // Открываем модальное окно
@@ -154,7 +147,6 @@ const Profile = () => {
     }
   };
 
-  // Закрытие модального окна
   const closeModal = () => {
     setModalOpen(false); // Закрываем модальное окно
     setSelectedAppointment(null); // Очищаем выбранную запись
@@ -183,6 +175,36 @@ const Profile = () => {
     }
   };
 
+  const handleEditUser = async (userId) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await api.get(`/users/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      // Можно добавить логику для редактирования пользователей здесь
+      // Открытие формы с данными пользователя для редактирования
+    } catch (err) {
+      setError('Ошибка при получении данных пользователя');
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    const token = localStorage.getItem('token');
+    try {
+      await api.delete(`/users/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      setUsers(users.filter((user) => user.id !== userId));
+      alert('Пользователь успешно удален');
+    } catch (err) {
+      setError('Не удалось удалить пользователя');
+    }
+  };
+
   if (loading) {
     return <div>Загрузка...</div>; // Пока загружаются данные
   }
@@ -197,9 +219,16 @@ const Profile = () => {
         <h2 className="text-3xl font-bold mb-6 text-center text-[#00baff]">Профиль</h2>
         {user ? (
           <div>
+            {user.role === 'admin' && (
+              <button
+                onClick={() => setModalOpen(true)}
+                className="w-full py-2 bg-[#00baff] hover:bg-[#8a2be2] text-white rounded mt-4"
+              >
+                Управление пользователями
+              </button>
+            )}
             {isEditing ? (
               <form onSubmit={handleUpdateProfile} className="space-y-4">
-                {/* Поля для редактирования профиля */}
                 <div className="flex flex-col">
                   <label htmlFor="username" className="text-gray-300 mb-1">Имя</label>
                   <input

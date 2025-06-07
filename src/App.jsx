@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
+import AdminPage from './pages/AdminPage'; 
 
 
 
@@ -44,6 +45,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+           <Route path="/admin" element={<ProtectedRoute element={<AdminPage />} />} /> {/* Страница админа */}
         </Routes>
       </div>
     </div>

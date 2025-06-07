@@ -133,20 +133,13 @@ export default function Services() {
 
                     {/* Кнопка удаления для админа */}
                     {isAdmin && (
-                      <Link
-                      to={`/service/${service.id}`}
-                      className="w-full bg-[#00baff] hover:bg-[#8a2be2] text-white py-2 rounded mt-4 text-center block"
-                    >
-                      Выбрать услугу
-                    </Link>
-                    )}
-                    {/* Кнопка записи на услугу */}
-                    <button
+                      <button
                         onClick={() => handleDeleteService(service.id)}
                         className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded mt-4"
                       >
-                        Удалить
+                        Удалить услугу
                       </button>
+                    )}
                   </motion.div>
                 ))}
               </div>

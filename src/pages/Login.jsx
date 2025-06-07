@@ -54,9 +54,17 @@ export default function Auth() {
         );
       }
 
-      // Сохраняем токен и перенаправляем пользователя
+      // Сохраняем токен и роль в localStorage
       localStorage.setItem('token', response.data.access_token);
-      navigate('/profile');
+      localStorage.setItem('role', response.data.role); // Сохраняем роль пользователя
+
+      // Перенаправляем на соответствующую страницу
+      if (response.data.role === 'admin') {
+        navigate('/admin'); // Панель админа для администраторов
+      } else {
+        navigate('/profile'); // Профиль для других пользователей
+      }
+
       window.location.reload(); // Редирект после успешной регистрации/входа
     } catch (err) {
       setError(isLogin ? 'Неверный логин или пароль' : 'Ошибка регистрации');
