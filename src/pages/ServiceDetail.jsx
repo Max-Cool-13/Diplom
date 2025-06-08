@@ -172,7 +172,7 @@ export default function ServiceDetail() {
         }
       });
       alert('Вы успешно записались на услугу!');
-      navigate('/appointments');
+      navigate('/profile');
     } catch (err) {
       setError('Не удалось записаться на услугу.');
     }

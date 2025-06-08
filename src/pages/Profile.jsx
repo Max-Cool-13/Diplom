@@ -314,15 +314,14 @@ const Profile = () => {
                       Подробнее
                     </button>
 
-                    {/* Кнопка удаления записи */}
-                    {user.role === 'client' && appointment.status !== 'completed' && (
-                      <button
-                        onClick={() => deleteAppointment(appointment.id)}
-                        className="mt-2 py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded"
-                      >
-                        Удалить запись
-                      </button>
-                    )}
+                   {user.role === 'client' && appointment.status !== 'completed' && (
+  <button
+    onClick={() => handleDeleteAppointment(appointment.id)} // Теперь передаем корректный id
+    className="mt-2 py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded"
+  >
+    Удалить запись
+  </button>
+)}
                   </div>
                 ))
               ) : (
