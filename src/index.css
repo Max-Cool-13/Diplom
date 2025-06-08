@@ -2,99 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Общие стили */
+/* Глобальные стили для body */
 body {
-  @apply bg-gray-900 text-white font-sans;
+  transition: background-color; /* Плавный переход для фона и цвета */
 }
 
-a, .highlight, .button {
-  color: #00baff; /* Неоновый синий */
-  text-decoration: none;
-  text-shadow: 0 0 10px rgba(0, 186, 255, 0.8), 0 0 20px rgba(0, 186, 255, 0.6), 0 0 30px rgba(0, 186, 255, 0.5), 0 0 40px rgba(0, 186, 255, 0.4); /* Эффект неона */
-  transition: all 0.3s ease;
+/* Тёмная тема */
+body.dark {
+  background-color: #111827; /* Темный фон */
+  color: white; /* Белый текст */
 }
 
-a:hover, .highlight:hover, .button:hover {
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6), 0 0 45px rgba(255, 255, 255, 0.5); /* Белый эффект при наведении */
-}
-
-/* Заголовки */
-h1, h2, h3 {
-  font-weight: bold;
-  color: #ffffff; /* Белый текст */
-  text-shadow: 0 0 10px rgba(0, 186, 255, 0.8), 0 0 20px rgba(0, 186, 255, 0.6), 0 0 30px rgba(0, 186, 255, 0.5); /* Неоновый светящийся эффект */
-}
-
-/* Кнопки */
-.button {
-  background-color: #00baff;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  text-shadow: 0 0 5px rgba(0, 186, 255, 0.8), 0 0 10px rgba(0, 186, 255, 0.6);
-}
-
-.button:hover {
-  background-color: #c49b66;
-  text-shadow: 0 0 10px rgba(196, 155, 102, 0.8), 0 0 20px rgba(196, 155, 102, 0.6), 0 0 30px rgba(196, 155, 102, 0.5);
-}
-
-/* Меню навигации */
-.navbar {
-  background-color: #000000;
-  padding: 15px;
-}
-
-.navbar a {
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(0, 186, 255, 0.8), 0 0 20px rgba(0, 186, 255, 0.6); /* Неоновый эффект */
-  transition: text-shadow 0.3s ease;
-}
-
-.navbar a:hover {
-  color: #00baff;
-  text-shadow: 0 0 15px rgba(0, 186, 255, 0.8), 0 0 30px rgba(0, 186, 255, 0.6), 0 0 45px rgba(0, 186, 255, 0.5);
-}
-
-/* Мобильное меню */
-.md:hidden .nav-links {
-  background-color: #000000;
-  border-top: 2px solid #c49b66;
-  padding: 10px;
-  text-align: center;
-}
-
-.md:hidden .nav-links li a {
-  display: block;
-  padding: 10px;
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(0, 186, 255, 0.8), 0 0 20px rgba(0, 186, 255, 0.6);
-}
-
-.md:hidden .nav-links li a:hover {
-  color: #00baff;
-  text-shadow: 0 0 15px rgba(0, 186, 255, 0.8), 0 0 30px rgba(0, 186, 255, 0.6), 0 0 45px rgba(0, 186, 255, 0.5);
+/* Светлая тема */
+body.light {
+  background-color: white; /* Светлый фон */
+  color: black; /* Черный текст */
 }
 
 /* Специфичный стиль для Барбершоп N1 с градиентной тенью */
+/* Стиль для текста "Барбершоп N1" */
 .barbershop-text {
-  font-size: 2em; /* Уменьшили размер текста */
   font-weight: bold;
+  transition: text-shadow 0.3s ease;
+}
+
+/* Тёмная тема - сохраняем текущие стили */
+body.dark .barbershop-text {
   text-shadow: 
     0 0 10px rgba(0, 186, 255, 0.8),  /* Голубая тень */
     0 0 20px rgba(0, 186, 255, 0.6), 
     0 0 30px rgba(138, 43, 226, 0.8),  /* Фиолетовая тень */
     0 0 40px rgba(138, 43, 226, 0.6); /* Фиолетовая тень */
-  transition: text-shadow 0.3s ease;
 }
 
-.barbershop-text:hover {
+body.dark .barbershop-text:hover {
   text-shadow: 
     0 0 10px rgba(138, 43, 226, 0.8), /* Фиолетовая тень */
     0 0 20px rgba(138, 43, 226, 0.6),
     0 0 30px rgba(0, 186, 255, 0.8),  /* Голубая тень */
     0 0 40px rgba(0, 186, 255, 0.6); /* Голубая тень */
+}
+
+/* Светлая тема - изменённый стиль */
+body.light .barbershop-text {
+  text-shadow: 
+    0 0 10px rgba(138, 43, 226, 0.8), /* Фиолетовая тень */
+    0 0 20px rgba(138, 43, 226, 0.6),
+    0 0 30px rgba(0, 186, 255, 0.8),  /* Голубая тень */
+    0 0 40px rgba(0, 186, 255, 0.6); /* Голубая тень */
+}
+
+body.light .barbershop-text:hover {
+  text-shadow: 
+    0 0 10px rgba(0, 186, 255, 0.8),  /* Голубая тень */
+    0 0 20px rgba(0, 186, 255, 0.6), 
+    0 0 30px rgba(138, 43, 226, 0.8),  /* Фиолетовая тень */
+    0 0 40px rgba(138, 43, 226, 0.6); /* Фиолетовая тень */
 }
 
 
