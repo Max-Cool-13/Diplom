@@ -8,7 +8,6 @@ import Marketplace from './pages/Marketplace';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
-import AdminPanel from './pages/AdminPanel'; // Импортируем панель администратора
 import Navbar from './components/Navbar';
 import TopMasters from './pages/TopMasters';
 
@@ -51,7 +50,6 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
-          <Route path="/admin" element={<AdminPanel />} /> {/* Страница админа без проверки */}
           <Route path="/top_masters" element={<TopMasters />} />
         </Routes>
       </div>
