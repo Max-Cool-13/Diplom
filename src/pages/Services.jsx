@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { useTheme } from '../context/ThemeContext'; // Импортируем useTheme для работы с темой
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,6 +16,9 @@ export default function Services() {
     description: '',
     price: '',
   });
+
+  // Получаем текущую тему через useTheme
+  const { isDarkMode } = useTheme(); // Использование глобальной темы
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -93,10 +97,10 @@ export default function Services() {
   };
 
   return (
-    <div className="bg-gray-900 min-h-screen py-12 text-white">
+    <div className={`min-h-screen py-12 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} ${isDarkMode ? 'text-white' : 'text-black'}`}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.h1
-          className="text-4xl font-extrabold text-center text-white mb-8"
+          className={`text-4xl font-extrabold text-center ${isDarkMode ? 'text-white' : 'text-black'} mb-8`}
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
@@ -121,14 +125,18 @@ export default function Services() {
                 {services.map((service) => (
                   <motion.div
                     key={service.id}
-                    className="bg-gray-800 p-6 rounded-lg shadow hover:bg-gray-700 transition-all duration-300"
-                    whileHover={{ scale: 1.05 }} // При наведении карточка увеличивается
+                    className={`p-6 rounded-lg shadow-lg text-center h-80 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} transition-all duration-300`}
+                    whileHover={{ scale: 1.05 }}  // При наведении карточка увеличивается
                     transition={{ type: "spring", stiffness: 300 }}
                   >
                     <Link to={`/service/${service.id}`} className="w-full">
-                      <h2 className="text-3xl font-bold text-[#00baff] mb-2">{service.name}</h2> {/* Увеличенный шрифт для названия */}
-                      <p className="text-gray-300">{service.description}</p>
-                      <p className="text-white text-xl font-semibold mt-2">Цена: {service.price} ₽</p> {/* Увеличен размер и цвет для цены */}
+                      <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-[#00baff]' : 'text-[#050372]'} mb-2`}>
+                        {service.name}
+                      </h2>
+                      <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>{service.description}</p>
+                      <p className={`text-xl font-semibold mt-2 ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                        Цена: {service.price} ₽
+                      </p>
                     </Link>
 
                     {/* Кнопка удаления для админа */}
