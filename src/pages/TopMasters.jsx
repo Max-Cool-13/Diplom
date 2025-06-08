@@ -1,12 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import DatePicker from 'react-datepicker';  // Импортируем DatePicker
+import "react-datepicker/dist/react-datepicker.css";  // Стили для DatePicker
+import { setYear, setMonth } from 'date-fns';  // Для работы с датами
 
 const TopMasters = () => {
-  const [masters] = useState([  // Здесь данные можно вручную задать, как пример
-    { id: 1, name: 'Иван Иванов', orders_count: 25, rating: 4.9 },
-    { id: 2, name: 'Мария Петрова', orders_count: 30, rating: 4.8 },
-    { id: 3, name: 'Алексей Смирнов', orders_count: 22, rating: 4.7 },
-    { id: 4, name: 'Елена Кузнецова', orders_count: 20, rating: 4.6 },
-  ]);
+  const [masters, setMasters] = useState([]);  // Состояние для списка мастеров
+  const [error, setError] = useState('');  // Для ошибок
+  const [loading, setLoading] = useState(true);  // Для индикатора загрузки
+  const [selectedDate, setSelectedDate] = useState(new Date());  // Дата для выбора месяца и года
+  const [selectedMonth, setSelectedMonth] = useState(null);  // Состояние для выбранного месяца
+
+  // Маппинг месяцев на числовое значение
+  const monthMapping = {
+    Январь: 1,
+    Февраль: 2,
+    Март: 3,
+    Апрель: 4,
+    Май: 5,
+    Июнь: 6,
+    Июль: 7,
+    Август: 8,
+    Сентябрь: 9,
+    Октябрь: 10,
+    Ноябрь: 11,
+    Декабрь: 12
+  };
+
+  useEffect(() => {
+    const fetchMasters = async () => {
+      try {
+        const year = selectedDate.getFullYear();
+        const month = selectedMonth || selectedDate.getMonth() + 1;  // Месяц в числовом формате
+
+        console.log(`Запрос к API: год - ${year}, месяц - ${month}`);  // Логируем запрос
+
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/appointments/top-masters/${year}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,  // Если нужно авторизоваться
+          },
+          params: {
+            month: month,  // Отправляем месяц в числовом формате
+          },
+        });
+
+        console.log('Ответ от API:', response.data);  // Логируем ответ от API
+
+        setMasters(response.data);  // Сохраняем данные о мастерах
+      } catch (err) {
+        setError('Ошибка при получении данных о мастерах.');
+        console.error('Ошибка API:', err);  // Логируем ошибку
+      } finally {
+        setLoading(false);  // Останавливаем индикатор загрузки
+      }
+    };
+
+    fetchMasters();  // Загружаем данные о мастерах при изменении даты или месяца
+  }, [selectedDate, selectedMonth]);
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);  // Обновляем выбранную дату при изменении пользователем
+  };
+
+  const handleMonthChange = (month) => {
+    setSelectedMonth(monthMapping[month]);  // Преобразуем месяц в числовое значение
+  };
+
+  if (loading) {
+    return <div>Загрузка...</div>;  // Пока данные загружаются
+  }
+
+  if (error) {
+    return <div className="text-red-500 text-sm mb-4">{error}</div>;  // Если ошибка при загрузке данных
+  }
+
+  // Фильтруем мастеров по выбранному месяцу
+  const filteredMasters = masters.filter((masterData) => {
+    const masterMonth = masterData.month;  // Месяц мастера
+    return selectedMonth ? masterMonth === selectedMonth : true;  // Фильтруем по месяцу
+  });
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
@@ -14,17 +86,64 @@ const TopMasters = () => {
 
       <div>
         <h2 className="text-3xl font-semibold mb-4">Топ мастера по количеству заказов</h2>
-        <ul>
-          {masters.map((master) => (
-            <li key={master.id}>
-              <div className="bg-gray-800 p-4 rounded mb-2">
-                <p className="text-[#00baff]">Имя: {master.name}</p>
-                <p className="text-gray-400">Количество заказов: {master.orders_count}</p>
-                <p className="text-gray-400">Рейтинг: {master.rating}</p> {/* Дополнительная информация */}
-              </div>
-            </li>
-          ))}
-        </ul>
+
+        <div className="mb-6">
+          <label htmlFor="year-picker" className="text-lg text-[#00baff]">Выберите год:</label>
+          <DatePicker
+            id="year-picker"
+            selected={selectedDate}
+            onChange={handleDateChange}
+            dateFormat="yyyy"  // Формат только для года
+            showYearPicker  // Показываем только год
+            className="w-full px-4 py-2 rounded bg-gray-700 text-white"
+          />
+        </div>
+
+        <div className="mb-6">
+          <label htmlFor="month-select" className="text-lg text-[#00baff]">Выберите месяц:</label>
+          <select
+            id="month-select"
+            value={selectedMonth || ''}
+            onChange={(e) => handleMonthChange(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-gray-700 text-white"
+          >
+            <option value="">Все месяцы</option>
+            <option value="Январь">Январь</option>
+            <option value="Февраль">Февраль</option>
+            <option value="Март">Март</option>
+            <option value="Апрель">Апрель</option>
+            <option value="Май">Май</option>
+            <option value="Июнь">Июнь</option>
+            <option value="Июль">Июль</option>
+            <option value="Август">Август</option>
+            <option value="Сентябрь">Сентябрь</option>
+            <option value="Октябрь">Октябрь</option>
+            <option value="Ноябрь">Ноябрь</option>
+            <option value="Декабрь">Декабрь</option>
+          </select>
+        </div>
+
+        {filteredMasters && filteredMasters.length > 0 ? (
+          filteredMasters.map((masterData, index) => (
+            <div key={index} className="mb-6">
+              <h3 className="text-xl font-semibold text-[#00baff] mb-2">
+                {masterData.month} месяц {masterData.year}
+              </h3>
+              <ul>
+                {masterData.topMasters.map((item, index) => (
+                  <li key={index}>
+                    <div className="bg-gray-800 p-4 rounded mb-2">
+                      <p className="text-[#00baff]">Имя: {item.master_name}</p>
+                      <p className="text-gray-400">Количество заказов: {item.completed_orders}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        ) : (
+          <p>Нет данных о мастерах за этот месяц.</p>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api'; // Импортируем настроенный axios-клиент
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -217,16 +219,17 @@ const Profile = () => {
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">
       <div className="bg-gray-800 p-8 rounded shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-bold mb-6 text-center text-[#00baff]">Профиль</h2>
+        
         {user ? (
           <div>
-            {user.role === 'admin' && (
-              <button
-                onClick={() => setModalOpen(true)}
-                className="w-full py-2 bg-[#00baff] hover:bg-[#8a2be2] text-white rounded mt-4"
+             {(user.role === 'master' || user.role === 'admin') && (
+              <Link
+                to="/top_masters"  // Ссылка для перехода на страницу "top_masters"
+                className="w-full py-2 bg-[#00baff] hover:bg-[#8a2be2] text-white rounded mt-4 block text-center"
               >
-                Управление пользователями
-              </button>
-            )}
+                Перейти к топ-мастерам
+              </Link>
+                )}
             {isEditing ? (
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div className="flex flex-col">
@@ -326,16 +329,7 @@ const Profile = () => {
                 <p>У вас нет записей.</p>
               )}
             </div>
-
-            <button
-              onClick={() => {
-                localStorage.removeItem('token'); // Удаляем токен при выходе
-                navigate('/login'); // Редирект на страницу входа
-              }}
-              className="mt-4 w-full py-2 bg-red-600 hover:bg-red-700 rounded text-white font-semibold"
-            >
-              Выйти
-            </button>
+           
           </div>
         ) : (
           <p>Пользователь не найден</p>
