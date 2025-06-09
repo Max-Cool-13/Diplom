@@ -1,14 +1,14 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
-from app.models import UserRole, AppointmentStatus  # Подключаем AppointmentStatus для использования в Pydantic схемах
+from app.models import UserRole, AppointmentStatus
 
 # Схема для создания нового пользователя
 class UserCreate(BaseModel):
     username: str
     email: EmailStr
     password: str
-    role: Optional[UserRole] = UserRole.client  # По умолчанию роль клиента
+    role: Optional[UserRole] = UserRole.client
 
 # Схема для обновления данных пользователя
 class UserUpdate(BaseModel):
@@ -23,7 +23,7 @@ class UserOut(BaseModel):
     email: EmailStr
     role: str
 
-    model_config = {  # Используем model_config вместо Config
+    model_config = {
         "from_attributes": True
     }
 
@@ -44,9 +44,9 @@ class ServiceOut(BaseModel):
     name: str
     description: str
     price: int
-    duration: int = 0  # Устанавливаем значение по умолчанию для duration (0 минут)
+    duration: int = 0
 
-    model_config = {  # Используем model_config вместо Config
+    model_config = {
         "from_attributes": True
     }
 
@@ -54,14 +54,14 @@ class ServiceOut(BaseModel):
 class AppointmentCreate(BaseModel):
     service_id: int
     appointment_time: datetime
-    client_name: str  # Добавляем поле для имени клиента
-    client_phone: Optional[str] = None  # Добавляем поле для телефона клиента
-    comment: Optional[str] = None  # Новое поле для комментария
-    master_id: Optional[int] = None  # ID мастера, если выбран
-    status: Optional[AppointmentStatus] = AppointmentStatus.not_completed  # Статус с умолчанием на 'не выполнено'
+    client_name: str
+    client_phone: Optional[str] = None
+    comment: Optional[str] = None
+    master_id: Optional[int] = None
+    status: Optional[AppointmentStatus] = AppointmentStatus.not_completed
     service_duration: Optional[int] = None
 
-    model_config = {  # Добавляем model_config для этой модели
+    model_config = {
         "from_attributes": True
     }
 
@@ -70,13 +70,13 @@ class AppointmentOut(BaseModel):
     id: int
     service_id: int
     appointment_time: datetime
-    client_name: str  # Имя клиента
-    client_phone: Optional[str] = None  # Телефон клиента
-    comment: Optional[str] = None  # Комментарий
-    master_id: Optional[int] = None  # ID мастера, если выбран
-    status: AppointmentStatus  # Статус выполнения услуги
+    client_name: str
+    client_phone: Optional[str] = None
+    comment: Optional[str] = None
+    master_id: Optional[int] = None
+    status: AppointmentStatus
 
-    model_config = {  # Используем model_config вместо Config
+    model_config = {
         "from_attributes": True
     }
 
@@ -84,20 +84,20 @@ class AppointmentOut(BaseModel):
 class AppointmentWithService(BaseModel):
     id: int
     appointment_time: datetime
-    client_name: str  # Имя клиента
-    client_phone: Optional[str] = None  # Телефон клиента
-    comment: Optional[str] = None  # Комментарий
-    master_id: Optional[int] = None  # Мастер
-    status: AppointmentStatus  # Статус выполнения
-    service: Optional[ServiceOut] = None # Связь с услугой
+    client_name: str
+    client_phone: Optional[str] = None
+    comment: Optional[str] = None
+    master_id: Optional[int] = None
+    status: AppointmentStatus
+    service: Optional[ServiceOut] = None
 
-    model_config = {  # Используем model_config вместо Config
+    model_config = {
         "from_attributes": True
     }
 
 # Новая схема для обновления статуса записи
 class AppointmentStatusUpdate(BaseModel):
-    status: AppointmentStatus  # Ожидаем статус для обновления записи
+    status: AppointmentStatus
 
 class TopMaster(BaseModel):
     master_name: str
@@ -105,4 +105,4 @@ class TopMaster(BaseModel):
 
 class TopMastersByMonth(BaseModel):
     month: int
-    topMasters: List[TopMaster]  # Список мастеров для конкретного месяца
+    topMasters: List[TopMaster]

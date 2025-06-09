@@ -15,16 +15,15 @@ def create_service(db: Session, service: ServiceCreate):
 
 # Запись на услугу
 def create_appointment(db: Session, appointment: AppointmentCreate, user_id: int):
-    # Создаем новую запись с учетом полей для комментария и мастера
     db_appointment = Appointment(
         user_id=user_id,
         service_id=appointment.service_id,
         appointment_time=appointment.appointment_time,
-        client_name=appointment.client_name,  # Имя клиента
-        client_phone=appointment.client_phone,  # Номер телефона клиента
-        status=appointment.status,  # Статус выполнения
-        comment=appointment.comment,  # Новый параметр комментарий
-        master_id=appointment.master_id  # Новый параметр мастера
+        client_name=appointment.client_name,
+        client_phone=appointment.client_phone,
+        status=appointment.status,
+        comment=appointment.comment,
+        master_id=appointment.master_id
     )
 
     db.add(db_appointment)

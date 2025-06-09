@@ -19,10 +19,10 @@ class User(Base):
     role = Column(SqlEnum(UserRole), nullable=False, default=UserRole.client)
 
     # Отношение для пользователей (клиентов)
-    appointments = relationship("Appointment", back_populates="user", foreign_keys="[Appointment.user_id]")  # Используем user_id
+    appointments = relationship("Appointment", back_populates="user", foreign_keys="[Appointment.user_id]")
 
     # Отношение для мастеров
-    master_appointments = relationship("Appointment", back_populates="master", foreign_keys="[Appointment.master_id]")  # Используем master_id
+    master_appointments = relationship("Appointment", back_populates="master", foreign_keys="[Appointment.master_id]")
 
 class Service(Base):
     __tablename__ = "services"
@@ -43,21 +43,21 @@ class AppointmentStatus(str, enum.Enum):
 class Appointment(Base):
     __tablename__ = "appointments"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))  # Внешний ключ на клиента
+    user_id = Column(Integer, ForeignKey("users.id"))
     service_id = Column(Integer, ForeignKey("services.id"))
     appointment_time = Column(DateTime)
 
     # Поля для имени клиента и номера телефона
-    client_name = Column(String, nullable=False)  # Имя клиента
-    client_phone = Column(String, nullable=True)  # Номер телефона клиента
-    status = Column(SqlEnum(AppointmentStatus), default=AppointmentStatus.not_completed)  # Статус выполнения
+    client_name = Column(String, nullable=False)
+    client_phone = Column(String, nullable=True)
+    status = Column(SqlEnum(AppointmentStatus), default=AppointmentStatus.not_completed)
 
     # Новые поля
-    comment = Column(String, nullable=True)  # Поле для комментариев
-    master_id = Column(Integer, ForeignKey("users.id"))  # Поле для мастера (ссылка на User)
+    comment = Column(String, nullable=True)
+    master_id = Column(Integer, ForeignKey("users.id"))
 
     # Определение отношений
-    user = relationship("User", back_populates="appointments", foreign_keys=[user_id])  # Отношение с пользователем (клиентом)
+    user = relationship("User", back_populates="appointments", foreign_keys=[user_id])
     service = relationship("Service", back_populates="appointments")
-    master = relationship("User", back_populates="appointments", foreign_keys=[master_id])  # Отношение с мастером
+    master = relationship("User", back_populates="appointments", foreign_keys=[master_id])
 

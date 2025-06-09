@@ -12,7 +12,7 @@ def create_user(db: Session, user: schemas.UserCreate):
     if is_first_user:
         role = models.UserRole.admin
     else:
-        # Проверяем, что роль есть и валидна (client или master)
+
         if user.role in [models.UserRole.client, models.UserRole.master]:
             role = user.role
         else:
@@ -59,24 +59,24 @@ def create_service(db: Session, service: schemas.ServiceCreate):
 
 
 def create_appointment(db: Session, appointment: schemas.AppointmentCreate, user_id: int):
-    # Получаем услугу для вычисления времени выполнения
+
     service = db.query(models.Service).filter(models.Service.id == appointment.service_id).first()
     if not service:
         raise ValueError("Услуга не найдена")
 
-    # Рассчитываем время окончания записи (время начала + продолжительность услуги)
+
     end_time = appointment.appointment_time + timedelta(minutes=service.duration)
 
-    # Создание новой записи с учётом комментария и мастера
+
     db_appointment = models.Appointment(
         user_id=user_id,
         service_id=appointment.service_id,
         appointment_time=appointment.appointment_time,
-        client_name=appointment.client_name,  # Имя клиента
-        client_phone=appointment.client_phone,  # Номер телефона клиента
-        status=appointment.status,  # Статус выполнения
-        comment=appointment.comment,  # Новый параметр комментарий
-        master_id=appointment.master_id  # Новый параметр мастера
+        client_name=appointment.client_name,
+        client_phone=appointment.client_phone,
+        status=appointment.status,
+        comment=appointment.comment,
+        master_id=appointment.master_id
     )
 
     db.add(db_appointment)
