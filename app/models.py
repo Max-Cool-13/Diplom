@@ -30,6 +30,7 @@ class Service(Base):
     name = Column(String, index=True)
     description = Column(String)
     price = Column(Integer)
+    duration = Column(Integer, nullable=False)
 
     appointments = relationship("Appointment", back_populates="service")
 

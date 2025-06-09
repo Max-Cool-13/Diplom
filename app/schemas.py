@@ -37,13 +37,14 @@ class ServiceCreate(BaseModel):
     name: str
     description: str
     price: int
+    duration: int
 
-# Схема для вывода услуги
 class ServiceOut(BaseModel):
     id: int
     name: str
     description: str
     price: int
+    duration: int = 0  # Устанавливаем значение по умолчанию для duration (0 минут)
 
     model_config = {  # Используем model_config вместо Config
         "from_attributes": True
@@ -58,6 +59,7 @@ class AppointmentCreate(BaseModel):
     comment: Optional[str] = None  # Новое поле для комментария
     master_id: Optional[int] = None  # ID мастера, если выбран
     status: Optional[AppointmentStatus] = AppointmentStatus.not_completed  # Статус с умолчанием на 'не выполнено'
+    service_duration: Optional[int] = None
 
     model_config = {  # Добавляем model_config для этой модели
         "from_attributes": True
@@ -87,7 +89,7 @@ class AppointmentWithService(BaseModel):
     comment: Optional[str] = None  # Комментарий
     master_id: Optional[int] = None  # Мастер
     status: AppointmentStatus  # Статус выполнения
-    service: ServiceOut  # Связь с услугой
+    service: Optional[ServiceOut] = None # Связь с услугой
 
     model_config = {  # Используем model_config вместо Config
         "from_attributes": True
@@ -96,3 +98,11 @@ class AppointmentWithService(BaseModel):
 # Новая схема для обновления статуса записи
 class AppointmentStatusUpdate(BaseModel):
     status: AppointmentStatus  # Ожидаем статус для обновления записи
+
+class TopMaster(BaseModel):
+    master_name: str
+    completed_orders: int
+
+class TopMastersByMonth(BaseModel):
+    month: int
+    topMasters: List[TopMaster]  # Список мастеров для конкретного месяца

@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app import models, schemas
 from app.auth import get_password_hash
+from datetime import timedelta
 
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -50,7 +51,7 @@ def get_service_by_id(db: Session, service_id: int):
 
 
 def create_service(db: Session, service: schemas.ServiceCreate):
-    db_service = models.Service(name=service.name, description=service.description, price=service.price)
+    db_service = models.Service(name=service.name, description=service.description, price=service.price, duration=service.duration)
     db.add(db_service)
     db.commit()
     db.refresh(db_service)
@@ -58,6 +59,14 @@ def create_service(db: Session, service: schemas.ServiceCreate):
 
 
 def create_appointment(db: Session, appointment: schemas.AppointmentCreate, user_id: int):
+    # Получаем услугу для вычисления времени выполнения
+    service = db.query(models.Service).filter(models.Service.id == appointment.service_id).first()
+    if not service:
+        raise ValueError("Услуга не найдена")
+
+    # Рассчитываем время окончания записи (время начала + продолжительность услуги)
+    end_time = appointment.appointment_time + timedelta(minutes=service.duration)
+
     # Создание новой записи с учётом комментария и мастера
     db_appointment = models.Appointment(
         user_id=user_id,
