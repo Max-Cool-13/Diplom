@@ -62,7 +62,7 @@ export default function Auth() {
       if (response.data.role === 'admin') {
         navigate('/admin'); // Панель админа для администраторов
       } else {
-        navigate('/profile'); // Профиль для других пользователей
+        navigate('/login'); // логин для других пользователей
       }
 
       window.location.reload(); // Редирект после успешной регистрации/входа
