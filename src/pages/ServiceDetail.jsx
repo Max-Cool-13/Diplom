@@ -1,25 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import DatePicker from 'react-datepicker';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { setHours, setMinutes, isBefore, isAfter, isToday } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { setHours, setMinutes, isBefore, isAfter, isToday } from "date-fns";
+import { ru } from "date-fns/locale";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ServiceDetail() {
   const { serviceId } = useParams();
   const [service, setService] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [clientName, setClientName] = useState('');
-  const [clientPhone, setClientPhone] = useState('');
+  const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
   const [bookedSlots, setBookedSlots] = useState([]); // Занятые слоты
-  const [comment, setComment] = useState('');
-  const [masterId, setMasterId] = useState(null);  // Поле для выбора мастера
-  const [masters, setMasters] = useState([]);  // Список мастеров
+  const [comment, setComment] = useState("");
+  const [masterId, setMasterId] = useState(null); // Поле для выбора мастера
+  const [masters, setMasters] = useState([]); // Список мастеров
+  const [modalMessage, setModalMessage] = useState(""); // Сообщение для модального окна
+  const [modalOpen, setModalOpen] = useState(false); // Открытие модального окна
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function ServiceDetail() {
         const response = await axios.get(`${API_URL}/services/${serviceId}`);
         setService(response.data);
       } catch (err) {
-        setError('Не удалось загрузить услугу. Проверьте API или ID услуги.');
+        setError("Не удалось загрузить услугу. Проверьте API или ID услуги.");
       } finally {
         setLoading(false);
       }
@@ -37,18 +39,18 @@ export default function ServiceDetail() {
     const fetchBookedSlots = async () => {
       try {
         const response = await axios.get(`${API_URL}/appointments/`, {
-          params: { service_id: serviceId }
+          params: { service_id: serviceId },
         });
-        const slots = response.data.map(appointment => appointment.appointment_time);
+        const slots = response.data.map((appointment) => appointment.appointment_time);
         setBookedSlots(slots); // Сохраняем занятые слоты
       } catch (err) {
-        console.error('Ошибка при загрузке забронированных слотов', err);
+        console.error("Ошибка при загрузке забронированных слотов", err);
       }
     };
 
     const fetchMasters = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         const response = await axios.get(`${API_URL}/masters/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -56,14 +58,14 @@ export default function ServiceDetail() {
         });
         setMasters(response.data);
       } catch (err) {
-        console.error('Ошибка при загрузке мастеров', err);
+        console.error("Ошибка при загрузке мастеров", err);
       }
     };
 
     if (serviceId) {
       fetchService();
       fetchBookedSlots();
-      fetchMasters();  // Загрузка мастеров
+      fetchMasters(); // Загрузка мастеров
     }
   }, [serviceId]);
 
@@ -77,20 +79,40 @@ export default function ServiceDetail() {
         },
       });
 
-      return response.data;  // Если true, время доступно
+      return response.data; // Если true, время доступно
     } catch (err) {
-      console.error('Ошибка при проверке занятости времени', err);
-      return false;  // Если произошла ошибка, предполагаем, что время занято
+      console.error("Ошибка при проверке занятости времени", err);
+      return false; // Если произошла ошибка, предполагаем, что время занято
     }
   };
 
   // Обработчик изменения времени
   const handleDateChange = async (date) => {
-    setSelectedDate(date);  // Устанавливаем выбранную дату
+    setSelectedDate(date); // Устанавливаем выбранную дату
 
+    // Рассчитываем время окончания записи (время начала + длительность услуги)
+    const endTime = new Date(date);
+    endTime.setMinutes(endTime.getMinutes() + service.duration); // Время окончания = время начала + длительность
+
+    // Проверяем, не перекрывает ли выбранное время уже забронированные слоты
     const isAvailable = await checkAvailability(serviceId, date);
     if (!isAvailable) {
-      alert('Это время уже занято. Пожалуйста, выберите другое.');
+      setModalMessage("Это время уже занято. Пожалуйста, выберите другое.");
+      setModalOpen(true); // Открываем модальное окно
+    }
+
+    // Проверяем, что время окончания услуги не перекрывает забронированные слоты
+    const isOverlapping = bookedSlots.some((slot) => {
+      const slotTime = new Date(slot);
+      return (
+        (isBefore(date, slotTime) && isAfter(endTime, slotTime)) || // Время начала нового записи до конца существующей
+        (isBefore(slotTime, endTime) && isAfter(slotTime, date)) // Время окончания существующей записи после начала новой
+      );
+    });
+
+    if (isOverlapping) {
+      setModalMessage("Выбранное время пересекается с другим приемом. Пожалуйста, выберите другое.");
+      setModalOpen(true); // Открываем модальное окно
     }
   };
 
@@ -116,7 +138,7 @@ export default function ServiceDetail() {
 
   // Подсвечиваем забронированные дни
   const highlightBookedSlots = (date) => {
-    return bookedSlots.some(slot => {
+    return bookedSlots.some((slot) => {
       const slotDate = new Date(slot);
       return slotDate.toDateString() === date.toDateString();
     });
@@ -124,15 +146,16 @@ export default function ServiceDetail() {
 
   // Обработчик изменения номера телефона
   const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, ''); // Убираем все нецифровые символы
+    let value = e.target.value.replace(/\D/g, ""); // Убираем все нецифровые символы
     if (value.length > 11) {
-      value = value.slice(0, 11);  // Ограничиваем максимальное количество цифр (11 символов)
+      value = value.slice(0, 11); // Ограничиваем максимальное количество цифр (11 символов)
     }
 
     // Форматируем номер как +7 (xxx) xxx-xx-xx
-    const formattedValue = value.length > 1 
-      ? `+7(${value.slice(1, 4)})${value.slice(4, 7)}-${value.slice(7, 9)}-${value.slice(9, 11)}`
-      : `+7(${value.slice(1)}`;
+    const formattedValue =
+      value.length > 1
+        ? `+7(${value.slice(1, 4)})${value.slice(4, 7)}-${value.slice(7, 9)}-${value.slice(9, 11)}`
+        : `+7(${value.slice(1)}`;
 
     setClientPhone(formattedValue); // Обновляем значение
   };
@@ -140,41 +163,45 @@ export default function ServiceDetail() {
   // Обработчик отправки формы для записи
   const handleAppointment = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      alert('Вы не авторизованы! Пожалуйста, войдите в систему.');
-      navigate('/login');
+      alert("Вы не авторизованы! Пожалуйста, войдите в систему.");
+      navigate("/login");
       return;
     }
 
     const phoneRegex = /^\+7\(\d{3}\)\d{3}-\d{2}-\d{2}$/;
     if (!phoneRegex.test(clientPhone)) {
-      alert('Неверный формат номера телефона. Используйте формат: +7 (xxx) xxx-xx-xx');
+      alert("Неверный формат номера телефона. Используйте формат: +7 (xxx) xxx-xx-xx");
       return;
     }
 
-    const localDate = selectedDate;  // Время, выбранное на фронтенде
-    const offset = localDate.getTimezoneOffset();  // Получаем смещение от UTC в минутах
-    localDate.setMinutes(localDate.getMinutes() - offset);  // Применяем смещение для перевода в UTC
-    const utcDate = localDate.toISOString();  // Преобразуем в строку ISO в формате UTC
+    const localDate = selectedDate; // Время, выбранное на фронтенде
+    const offset = localDate.getTimezoneOffset(); // Получаем смещение от UTC в минутах
+    localDate.setMinutes(localDate.getMinutes() - offset); // Применяем смещение для перевода в UTC
+    const utcDate = localDate.toISOString(); // Преобразуем в строку ISO в формате UTC
 
     try {
-      const response = await axios.post(`${API_URL}/appointments/`, {
-        service_id: service.id,
-        client_name: clientName,
-        client_phone: clientPhone,
-        appointment_time: utcDate,  // Отправляем время в UTC
-        comment: comment,  // Отправляем комментарий
-        master_id: masterId,  // Отправляем ID мастера
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.post(
+        `${API_URL}/appointments/`,
+        {
+          service_id: service.id,
+          client_name: clientName,
+          client_phone: clientPhone,
+          appointment_time: utcDate, // Отправляем время в UTC
+          comment: comment, // Отправляем комментарий
+          master_id: masterId, // Отправляем ID мастера
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
-      alert('Вы успешно записались на услугу!');
-      navigate('/profile');
+      );
+      alert("Вы успешно записались на услугу!");
+      navigate("/profile");
     } catch (err) {
-      setError('Не удалось записаться на услугу.');
+      setError("Не удалось записаться на услугу.");
     }
   };
 
@@ -226,8 +253,8 @@ export default function ServiceDetail() {
               timeFormat="HH:mm" // 24-часовой формат
               locale={ru} // Устанавливаем русский локаль для отображения
               filterTime={timeFilter} // Применяем фильтр времени
-              highlightDates={bookedSlots.map(slot => new Date(slot))} // Подсвечиваем забронированные слоты
-              dayClassName={(date) => highlightBookedSlots(date) ? 'bg-gray-400' : undefined} // Серый фон для забронированных дней
+              highlightDates={bookedSlots.map((slot) => new Date(slot))} // Подсвечиваем забронированные слоты
+              dayClassName={(date) => highlightBookedSlots(date) ? "bg-gray-400" : undefined} // Серый фон для забронированных дней
             />
           </div>
 

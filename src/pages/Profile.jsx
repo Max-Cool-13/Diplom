@@ -346,7 +346,9 @@ const Profile = () => {
             <p><strong>Комментарий:</strong> {selectedAppointment.comment || 'Нет комментариев'}</p>
             <p><strong>Мастер:</strong> {masterName || 'Не указан'}</p> {/* Мастер */}
             <p><strong>Цена:</strong> {selectedAppointment.service.price} ₽</p>
-
+            <p><strong>Клиент:</strong> {selectedAppointment.client_name}</p>
+            <p><strong>Телефон:</strong> {selectedAppointment.client_phone}</p>
+            <p><strong>Длительность:</strong> {selectedAppointment.service.duration} <strong>мин</strong></p>
             {/* Кнопка для изменения статуса */}
             {user.role === 'master' && (
               <div className="mt-4">

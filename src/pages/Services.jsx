@@ -15,6 +15,7 @@ export default function Services() {
     name: '',
     description: '',
     price: '',
+    duration: '' // добавляем поле для времени выполнения
   });
 
   // Получаем текущую тему через useTheme
@@ -73,6 +74,7 @@ export default function Services() {
         name: '',
         description: '',
         price: '',
+        duration: '' // сбрасываем поле времени
       });
     } catch (err) {
       setError('Ошибка при добавлении услуги.');
@@ -137,6 +139,10 @@ export default function Services() {
                       <p className={`text-xl font-semibold mt-2 ${isDarkMode ? 'text-white' : 'text-black'}`}>
                         Цена: {service.price} ₽
                       </p>
+                      {/* Отображаем время выполнения услуги */}
+                      <p className={`text-lg mt-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>
+                        Время выполнения: {service.duration} мин
+                      </p>
                     </Link>
 
                     {/* Кнопка удаления для админа */}
@@ -181,6 +187,14 @@ export default function Services() {
                 placeholder="Цена"
                 value={newService.price}
                 onChange={(e) => setNewService({ ...newService, price: e.target.value })}
+                className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#8a2be2]"
+                required
+              />
+              <input
+                type="number"
+                placeholder="Время выполнения (в минутах)"
+                value={newService.duration}
+                onChange={(e) => setNewService({ ...newService, duration: e.target.value })}
                 className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#8a2be2]"
                 required
               />
