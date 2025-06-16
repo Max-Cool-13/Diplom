@@ -99,10 +99,10 @@ export default function Services() {
   };
 
   return (
-    <div className={`min-h-screen py-12 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} ${isDarkMode ? 'text-white' : 'text-black'}`}>
+    <div className={`min-h-screen py-12 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} ${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.h1
-          className={`text-4xl font-extrabold text-center ${isDarkMode ? 'text-white' : 'text-black'} mb-8`}
+          className={`text-4xl font-extrabold text-center mb-8 ${isDarkMode ? 'text-white' : 'text-[#050272]'}`}
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
@@ -127,7 +127,7 @@ export default function Services() {
                 {services.map((service) => (
                   <motion.div
                     key={service.id}
-                    className={`p-6 rounded-lg shadow-lg text-center h-80 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'} transition-all duration-300`}
+                    className={`p-6 rounded-lg shadow-lg text-center h-80 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'} hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'} transition-all duration-300`}
                     whileHover={{ scale: 1.05 }}  // При наведении карточка увеличивается
                     transition={{ type: "spring", stiffness: 300 }}
                   >
@@ -163,15 +163,15 @@ export default function Services() {
 
         {/* Панель добавления услуги для администратора */}
         {isAdmin && (
-          <div className="mt-12 bg-gray-800 p-8 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-white">Добавить услугу</h2>
+          <div className={`mt-12 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-300'} p-8 rounded-lg shadow-lg`}>
+            <h2 className={`text-2xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>Добавить услугу</h2>
             <form onSubmit={handleAddService} className="space-y-4">
               <input
                 type="text"
                 placeholder="Название услуги"
                 value={newService.name}
                 onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#8a2be2]"
+                className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2  ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
                 required
               />
               <input
@@ -179,7 +179,7 @@ export default function Services() {
                 placeholder="Описание услуги"
                 value={newService.description}
                 onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-                className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#8a2be2]"
+                className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2  ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
                 required
               />
               <input
@@ -187,7 +187,7 @@ export default function Services() {
                 placeholder="Цена"
                 value={newService.price}
                 onChange={(e) => setNewService({ ...newService, price: e.target.value })}
-                className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#8a2be2]"
+                className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2  ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
                 required
               />
               <input
@@ -195,12 +195,12 @@ export default function Services() {
                 placeholder="Время выполнения (в минутах)"
                 value={newService.duration}
                 onChange={(e) => setNewService({ ...newService, duration: e.target.value })}
-                className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-[#8a2be2]"
+                className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2  ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
                 required
               />
               <button
                 type="submit"
-                className="w-full bg-[#00baff] hover:bg-[#8a2be2] text-white py-2 rounded"
+                className={`w-full py-2 rounded ${isDarkMode ? "border-[#00baff] bg-[#00baff] hover:bg-[#00bbffcf] text-white" : "border-[#8a2be2] bg-[#8a2be2] hover:bg-[#892be2d8] text-white"}`}
               >
                 Добавить услугу
               </button>

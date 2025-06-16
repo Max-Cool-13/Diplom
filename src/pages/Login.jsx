@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext'; // Импортируем useTheme для работы с темой
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -13,6 +14,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true); // Состояние для переключения между входом и регистрацией
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme(); // Получаем текущую тему
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Предотвращаем стандартное поведение формы
@@ -58,12 +60,8 @@ export default function Auth() {
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('role', response.data.role); // Сохраняем роль пользователя
 
-      // Перенаправляем на соответствующую страницу
-      if (response.data.role === 'admin') {
-        navigate('/admin'); // Панель админа для администраторов
-      } else {
-        navigate('/login'); // логин для других пользователей
-      }
+      // Перенаправляем на страницу профиля
+      navigate('/profile'); // После успешного входа или регистрации, перенаправляем на страницу профиля
 
       window.location.reload(); // Редирект после успешной регистрации/входа
     } catch (err) {
@@ -87,12 +85,12 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-white'} ${isDarkMode ? 'text-white' : 'text-[#050272]'} px-4`}>
       <form
         onSubmit={handleSubmit}
-        className="bg-gray-800 p-8 rounded shadow-md w-full max-w-md"
+        className={`p-8 rounded shadow-md w-full max-w-md ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}
       >
-        <h1 className="text-3xl font-bold mb-6 text-center text-[#00baff]">
+        <h1 className={`text-3xl font-bold mb-6 text-center ${isDarkMode ? 'text-[#00baff]' : 'text-[#050272]'}`}>
           {isLogin ? 'Вход' : 'Регистрация'}
         </h1>
 
@@ -100,7 +98,7 @@ export default function Auth() {
           <input
             type="text"
             placeholder="Имя"
-            className="w-full mb-4 px-4 py-2 rounded border border-[#8a2be2] bg-gray-700 text-white focus:outline-none"
+            className={`w-full mb-4 px-4 py-2 rounded border ${isDarkMode ? 'bg-gray-700 text-white border-[#00baff] focus:ring-[#00baff]' : 'bg-white text-[#050272] border-[#8a2be2] focus:ring-[#8a2be2]'}`}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -110,7 +108,7 @@ export default function Auth() {
         <input
           type="email"
           placeholder="Email"
-          className="w-full mb-4 px-4 py-2 rounded border border-[#8a2be2] bg-gray-700 text-white focus:outline-none"
+          className={`w-full mb-4 px-4 py-2 rounded border ${isDarkMode ? 'bg-gray-700 text-white border-[#00baff] focus:ring-[#00baff]' : 'bg-white text-[#050272] border-[#8a2be2] focus:ring-[#8a2be2]'}`}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -119,7 +117,7 @@ export default function Auth() {
         <input
           type="password"
           placeholder="Пароль"
-          className="w-full mb-4 px-4 py-2 rounded border border-[#8a2be2] bg-gray-700 text-white focus:outline-none"
+          className={`w-full mb-4 px-4 py-2 rounded border ${isDarkMode ? 'bg-gray-700 text-white border-[#00baff] focus:ring-[#00baff]' : 'bg-white text-[#050272] border-[#8a2be2] focus:ring-[#8a2be2]'}`}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -127,8 +125,8 @@ export default function Auth() {
 
         {!isLogin && (
           <div className="mb-6">
-            <label className="mr-4 font-semibold text-[#8a2be2]">Роль:</label>
-            <label className="mr-4 text-[#8a2be2]">
+            <label className={`mr-4 font-semibold ${isDarkMode ? 'text-[#00baff]' : 'text-[#050272]'}`}>Роль:</label>
+            <label className={`${isDarkMode ? 'text-[#00baff]' : 'text-[#050272]'}`}>
               <input
                 type="radio"
                 name="role"
@@ -139,7 +137,7 @@ export default function Auth() {
               />{' '}
               Клиент
             </label>
-            <label className="text-[#8a2be2]">
+            <label className={`${isDarkMode ? 'text-[#00baff]' : 'text-[#050272]'}`}>
               <input
                 type="radio"
                 name="role"
@@ -157,15 +155,15 @@ export default function Auth() {
 
         <button
           type="submit"
-          className="w-full bg-[#00baff] hover:bg-[#6a0dad] text-white py-2 rounded-full"
+          className={`w-full ${isDarkMode ? 'bg-[#00baff] hover:bg-[#00bbffcf] text-white' : 'bg-[#8a2be2] hover:bg-[#892be2d8] text-white'} py-2 rounded-full`}
           disabled={loading}
         >
           {loading ? 'Загрузка...' : isLogin ? 'Войти' : 'Зарегистрироваться'}
         </button>
 
         <div className="mt-4 text-center">
-          <span className="text-gray-400">
-            {isLogin ? 'Нет аккаунта?' : 'Есть аккаунт?'}
+          <span className={`text-gray-400 ${isDarkMode ? 'text-gray-300' : 'text-[#050272]'}`}>
+            {isLogin ? 'Нет аккаунта? ' : 'Есть аккаунт? '}
           </span>
           <button
             onClick={(e) => {
@@ -176,7 +174,7 @@ export default function Auth() {
                 handleLoginSwitch();
               }
             }}
-            className="text-[#00baff] hover:text-[#8a2be2] font-semibold"
+            className={`font-semibold ${isDarkMode ? "text-[#00baff] hover:text-[#8a2be2] " : "text-[#8a2be2] hover:text-[#00baff] "}`}
           >
             {isLogin ? 'Зарегистрироваться' : 'Войти'}
           </button>
@@ -185,3 +183,4 @@ export default function Auth() {
     </div>
   );
 }
+

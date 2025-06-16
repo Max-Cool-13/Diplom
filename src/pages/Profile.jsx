@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api'; // Импортируем настроенный axios-клиент
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext'; // Импортируем useTheme для работы с темой
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -16,6 +17,8 @@ const Profile = () => {
   const [selectedAppointment, setSelectedAppointment] = useState(null); // Для выбранной записи
   const [modalOpen, setModalOpen] = useState(false); // Состояние для открытия модального окна
   const [masterName, setMasterName] = useState(''); // Для имени мастера
+  const navigate = useNavigate();
+  const { isDarkMode } = useTheme(); // Получаем текущую тему
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -216,16 +219,16 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-6">
-      <div className="bg-gray-800 p-8 rounded shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold mb-6 text-center text-[#00baff]">Профиль</h2>
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900' : 'bg-white'} text-white flex items-center justify-center p-6`}>
+      <div className={`p-8 rounded shadow-lg w-full max-w-md ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
+        <h2 className={`text-3xl font-bold mb-6 text-center ${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>Профиль</h2>
         
         {user ? (
           <div>
              {(user.role === 'master' || user.role === 'admin') && (
               <Link
                 to="/top_masters"  // Ссылка для перехода на страницу "top_masters"
-                className="w-full py-2 bg-[#00baff] hover:bg-[#8a2be2] text-white rounded mt-4 block text-center"
+                className={`w-full py-2 ${isDarkMode ? 'bg-[#00baff] hover:bg-[#8a2be2]' : 'bg-[#8a2be2] hover:bg-[#892be2d8]'} text-white rounded mt-4 block text-center`}
               >
                 Перейти к топ-мастерам
               </Link>
@@ -233,12 +236,12 @@ const Profile = () => {
             {isEditing ? (
               <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div className="flex flex-col">
-                  <label htmlFor="username" className="text-gray-300 mb-1">Имя</label>
+                  <label htmlFor="username" className={`${isDarkMode ? 'text-gray-300 mb-1' : 'text-[#050272] mb-1'}`}>Имя</label>
                   <input
                     type="text"
                     id="username"
                     placeholder="Имя"
-                    className="w-full px-4 py-2 rounded border text-black"
+                    className={`w-full px-4 py-2 rounded border ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
                     value={updatedName}
                     onChange={(e) => setUpdatedName(e.target.value)}
                     required
@@ -246,12 +249,12 @@ const Profile = () => {
                 </div>
 
                 <div className="flex flex-col">
-                  <label htmlFor="email" className="text-gray-300 mb-1">Email</label>
+                  <label htmlFor="email" className={`${isDarkMode ? 'text-gray-300 mb-1' : 'text-[#050272] mb-1'}`}>Email</label>
                   <input
                     type="email"
                     id="email"
                     placeholder="Email"
-                    className="w-full px-4 py-2 rounded border text-black"
+                    className={`w-full px-4 py-2 rounded border ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
                     value={updatedEmail}
                     onChange={(e) => setUpdatedEmail(e.target.value)}
                     required
@@ -259,12 +262,12 @@ const Profile = () => {
                 </div>
 
                 <div className="flex flex-col">
-                  <label htmlFor="password" className="text-gray-300 mb-1">Новый пароль</label>
+                  <label htmlFor="password" className={`${isDarkMode ? 'text-gray-300 mb-1' : 'text-[#050272] mb-1'}`}>Новый пароль</label>
                   <input
                     type="password"
                     id="password"
                     placeholder="Новый пароль"
-                    className="w-full px-4 py-2 rounded border text-black"
+                    className={`w-full px-4 py-2 rounded border ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
                     value={updatedPassword}
                     onChange={(e) => setUpdatedPassword(e.target.value)}
                     required
@@ -273,33 +276,33 @@ const Profile = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#00baff] hover:bg-[#8a2be2] text-white py-2 rounded"
+                  className={`w-full py-2 rounded ${isDarkMode ? 'bg-[#00baff] hover:bg-[#00bbffcf] text-white' : 'bg-[#8a2be2] hover:bg-[#892be2d8] text-white'} text-lg`}
                 >
                   Сохранить изменения
                 </button>
               </form>
             ) : (
               <div>
-                <p><strong>Имя:</strong> {user.username}</p>
-                <p><strong>Email:</strong> {user.email}</p>
+                <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Имя:</strong> {user.username}</p>
+                <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Email:</strong> {user.email}</p>
 
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="mt-4 w-full py-2 bg-[#00baff] hover:bg-[#8a2be2] text-white rounded"
+                  className={`mt-4 w-full py-2 ${isDarkMode ? 'bg-[#00baff] hover:bg-[#8a2be2]' : 'bg-[#8a2be2] hover:bg-[#892be2d8]'} text-white rounded`}
                 >
                   Редактировать профиль
                 </button>
               </div>
             )}
 
-            <h3 className="text-2xl mt-6 mb-4 text-[#00baff]">История записей</h3>
+            <h3 className={`text-2xl mt-6 mb-4 ${isDarkMode ? 'text-[#00baff]' : 'text-[#050372]'}`}>История записей</h3>
             <div className="space-y-4">
               {appointments.length > 0 ? (
                 appointments.map((appointment) => (
-                  <div key={appointment.id} className="bg-gray-700 p-4 rounded">
-                    <p><strong>Услуга:</strong> {appointment.service.name}</p>
-                    <p><strong>Дата:</strong> {new Date(appointment.appointment_time).toLocaleString()}</p>
-                    <p>
+                  <div key={appointment.id} className={`bg-gray-700 p-4 rounded ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                    <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Услуга:</strong> {appointment.service.name}</p>
+                    <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Дата:</strong> {new Date(appointment.appointment_time).toLocaleString()}</p>
+                    <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>
                       <strong>Статус:</strong>
                       <span className={getStatusClass(appointment.status)}>
                         {appointment.status === 'not_completed' ? 'не выполнен' : 'выполнен'}
@@ -309,46 +312,46 @@ const Profile = () => {
                     {/* Кнопка "Подробнее" для отображения подробностей */}
                     <button
                       onClick={() => openModal(appointment)} // Открыть модальное окно с деталями
-                      className="mt-2 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                      className={`mt-2 py-2 px-4 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded`}
                     >
                       Подробнее
                     </button>
 
-                   {user.role === 'client' && appointment.status !== 'completed' && (
-  <button
-    onClick={() => handleDeleteAppointment(appointment.id)} // Теперь передаем корректный id
-    className="mt-2 py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded"
-  >
-    Удалить запись
-  </button>
-)}
+                    {user.role === 'client' && appointment.status !== 'completed' && (
+                      <button
+                        onClick={() => handleDeleteAppointment(appointment.id)} // Теперь передаем корректный id
+                        className={`mt-2 py-2 px-4 ${isDarkMode ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'} text-white rounded`}
+                      >
+                        Удалить запись
+                      </button>
+                    )}
                   </div>
                 ))
               ) : (
-                <p>У вас нет записей.</p>
+                <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>У вас нет записей.</p>
               )}
             </div>
            
           </div>
         ) : (
-          <p>Пользователь не найден</p>
+          <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>Пользователь не найден</p>
         )}
       </div>
 
       {/* Модальное окно с деталями записи */}
       {modalOpen && selectedAppointment && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white text-black p-6 rounded w-96">
+          <div className={`bg-white p-6 rounded w-96 ${isDarkMode ? 'text-black' : 'text-black'}`}>
             <h3 className="text-2xl mb-4">Детали записи</h3>
-            <p><strong>Услуга:</strong> {selectedAppointment.service.name}</p>
-            <p><strong>Дата:</strong> {new Date(selectedAppointment.appointment_time).toLocaleString()}</p>
-            <p><strong>Статус:</strong> {selectedAppointment.status === 'not_completed' ? 'Не выполнен' : 'Выполнен'}</p>
-            <p><strong>Комментарий:</strong> {selectedAppointment.comment || 'Нет комментариев'}</p>
-            <p><strong>Мастер:</strong> {masterName || 'Не указан'}</p> {/* Мастер */}
-            <p><strong>Цена:</strong> {selectedAppointment.service.price} ₽</p>
-            <p><strong>Клиент:</strong> {selectedAppointment.client_name}</p>
-            <p><strong>Телефон:</strong> {selectedAppointment.client_phone}</p>
-            <p><strong>Длительность:</strong> {selectedAppointment.service.duration} <strong>мин</strong></p>
+            <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Услуга:</strong> {selectedAppointment.service.name}</p>
+            <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Дата:</strong> {new Date(selectedAppointment.appointment_time).toLocaleString()}</p>
+            <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Статус:</strong> {selectedAppointment.status === 'not_completed' ? 'Не выполнен' : 'Выполнен'}</p>
+            <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Комментарий:</strong> {selectedAppointment.comment || 'Нет комментариев'}</p>
+            <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Мастер:</strong> {masterName || 'Не указан'}</p> {/* Мастер */}
+            <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Цена:</strong> {selectedAppointment.service.price} ₽</p>
+            <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Клиент:</strong> {selectedAppointment.client_name}</p>
+            <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Телефон:</strong> {selectedAppointment.client_phone}</p>
+            <p className={`${isDarkMode ? 'text-white' : 'text-[#050272]'}`}><strong>Длительность:</strong> {selectedAppointment.service.duration} <strong>мин</strong></p>
             {/* Кнопка для изменения статуса */}
             {user.role === 'master' && (
               <div className="mt-4">

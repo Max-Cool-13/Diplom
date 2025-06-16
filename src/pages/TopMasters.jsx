@@ -3,8 +3,10 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';  // Импортируем DatePicker
 import "react-datepicker/dist/react-datepicker.css";  // Стили для DatePicker
 import { setYear, setMonth } from 'date-fns';  // Для работы с датами
+import { useTheme } from '../context/ThemeContext'; // Для работы с темой
 
 const TopMasters = () => {
+  const { isDarkMode } = useTheme(); // Получаем состояние темы
   const [masters, setMasters] = useState([]);  // Состояние для списка мастеров
   const [error, setError] = useState('');  // Для ошибок
   const [loading, setLoading] = useState(true);  // Для индикатора загрузки
@@ -81,31 +83,35 @@ const TopMasters = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="text-4xl font-bold text-[#00baff] mb-8 text-center">Лучшие мастера месяца</h1>
+    <div className={`${isDarkMode ? 'bg-gray-900 text-white' : 'bg-white text-[#050272]'} min-h-screen p-6`}>
+      <h1 className={`text-4xl font-bold text-center ${isDarkMode ? 'text-white' : 'text-[#050272]'} mb-8`}>
+        Лучшие мастера месяца
+      </h1>
 
       <div>
-        <h2 className="text-3xl font-semibold mb-4">Топ мастера по количеству заказов</h2>
+        <h2 className={`text-3xl font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>
+          Топ мастера по количеству заказов
+        </h2>
 
         <div className="mb-6">
-          <label htmlFor="year-picker" className="text-lg text-[#00baff]">Выберите год:</label>
+          <label htmlFor="year-picker" className={`text-lg ${isDarkMode ? 'text-[#00baff]' : 'text-[#050272]'}`}>Выберите год:</label>
           <DatePicker
             id="year-picker"
             selected={selectedDate}
             onChange={handleDateChange}
             dateFormat="yyyy"  // Формат только для года
             showYearPicker  // Показываем только год
-            className="w-full px-4 py-2 rounded bg-gray-700 text-white"
+            className={`w-full px-4 py-2 rounded ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-[#050272]'} focus:ring-2 focus:ring-[#00baff]`}
           />
         </div>
 
         <div className="mb-6">
-          <label htmlFor="month-select" className="text-lg text-[#00baff]">Выберите месяц:</label>
+          <label htmlFor="month-select" className={`text-lg ${isDarkMode ? 'text-[#00baff]' : 'text-[#050272]'}`}>Выберите месяц:</label>
           <select
             id="month-select"
             value={selectedMonth || ''}
             onChange={(e) => handleMonthChange(e.target.value)}
-            className="w-full px-4 py-2 rounded bg-gray-700 text-white"
+            className={`w-full px-4 py-2 rounded ${isDarkMode ? 'bg-gray-700 text-white' : 'bg-white text-[#050272]'} focus:ring-2 focus:ring-[#00baff]`}
           >
             <option value="">Все месяцы</option>
             <option value="Январь">Январь</option>
@@ -126,15 +132,15 @@ const TopMasters = () => {
         {filteredMasters && filteredMasters.length > 0 ? (
           filteredMasters.map((masterData, index) => (
             <div key={index} className="mb-6">
-              <h3 className="text-xl font-semibold text-[#00baff] mb-2">
+              <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-[#00baff]' : 'text-[#050272]'} mb-2`}>
                 {masterData.month} месяц {masterData.year}
               </h3>
               <ul>
                 {masterData.topMasters.map((item, index) => (
                   <li key={index}>
-                    <div className="bg-gray-800 p-4 rounded mb-2">
-                      <p className="text-[#00baff]">Имя: {item.master_name}</p>
-                      <p className="text-gray-400">Количество заказов: {item.completed_orders}</p>
+                    <div className={`bg-gray-800 p-4 rounded mb-2 ${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>
+                      <p className={isDarkMode ? 'text-[#00baff]' : 'text-[#050272]'}>Имя: {item.master_name}</p>
+                      <p className={isDarkMode ? 'text-gray-400' : 'text-gray-800'}>Количество заказов: {item.completed_orders}</p>
                     </div>
                   </li>
                 ))}

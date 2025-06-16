@@ -5,6 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { setHours, setMinutes, isBefore, isAfter, isToday } from "date-fns";
 import { ru } from "date-fns/locale";
+import { useTheme } from '../context/ThemeContext'; // Импортируем useTheme для работы с темой
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -23,6 +24,7 @@ export default function ServiceDetail() {
   const [modalMessage, setModalMessage] = useState(""); // Сообщение для модального окна
   const [modalOpen, setModalOpen] = useState(false); // Открытие модального окна
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme(); // Получаем текущую тему
 
   useEffect(() => {
     const fetchService = async () => {
@@ -214,18 +216,18 @@ export default function ServiceDetail() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
-      <div className="bg-gray-800 p-8 rounded shadow-md w-full max-w-3xl">
-        <h1 className="text-3xl font-bold mb-6 text-center text-white">{service?.name}</h1>
-        <p className="text-gray-300">{service?.description}</p>
-        <p className="text-[#00baff] text-xl font-semibold mt-4">Цена: {service?.price} ₽</p> {/* Выделение цены */}
+    <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-white'} text-white px-4`}>
+      <div className={`p-8 rounded shadow-md w-full max-w-3xl ${isDarkMode ? 'bg-gray-800' : 'bg-gray-200'}`}>
+        <h1 className= {`text-3xl font-bold mb-6 text-center ${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>{service?.name}</h1>
+        <p className={`${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{service?.description}</p>
+        <p className={`text-xl font-semibold mt-4 ${isDarkMode ? 'text-[#00baff]' : 'text-[#8a2be2]'}`}>Цена: {service?.price} ₽</p> {/* Выделение цены */}
 
-        <h2 className="text-2xl mt-6 mb-4 text-white">Записаться на услугу</h2> {/* Выделение заголовка */}
+        <h2 className={`text-2xl mt-6 mb-4 ${isDarkMode ? 'text-white' : 'text-[#050272]'}`}>Записаться на услугу</h2> {/* Выделение заголовка */}
         <form onSubmit={handleAppointment} className="space-y-4">
           <input
             type="text"
             placeholder="Ваше имя"
-            className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:ring-2 focus:ring-[#8a2be2]"
+            className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2  ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
             value={clientName}
             onChange={(e) => setClientName(e.target.value)}
             required
@@ -233,14 +235,14 @@ export default function ServiceDetail() {
           <input
             type="tel"
             placeholder="+7 (xxx) xxx-xx-xx"
-            className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white focus:ring-2 focus:ring-[#8a2be2]"
+            className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2  ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
             value={clientPhone}
             onChange={handlePhoneChange}  // Обработчик изменения номера телефона
             required
           />
 
           <div className="mb-4">
-            <label htmlFor="appointment-time" className="block text-lg text-white">Выберите дату и время:</label>
+            <label htmlFor="appointment-time" className={`block text-lg ${isDarkMode ? 'text-[#00baff]' : 'text-[#8a2be2]'}`}>Выберите дату и время:</label>
             <DatePicker
               selected={selectedDate}
               onChange={handleDateChange} // Обработчик изменения даты
@@ -249,7 +251,7 @@ export default function ServiceDetail() {
               timeCaption="Время"
               dateFormat="Pp" // Формат отображаемой даты и времени
               minDate={new Date()} // Минимальная дата - текущая
-              className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white"
+              className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2  ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
               timeFormat="HH:mm" // 24-часовой формат
               locale={ru} // Устанавливаем русский локаль для отображения
               filterTime={timeFilter} // Применяем фильтр времени
@@ -259,11 +261,11 @@ export default function ServiceDetail() {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="master" className="block text-lg text-white">Выберите мастера:</label>
+            <label htmlFor="master" className={`block text-lg ${isDarkMode ? 'text-[#00baff]' : 'text-[#8a2be2]'}`}>Выберите мастера:</label>
             <select
               value={masterId}
               onChange={(e) => setMasterId(e.target.value)}
-              className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white"
+              className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2  ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
               required
             >
               <option value="">Выберите мастера</option>
@@ -276,18 +278,18 @@ export default function ServiceDetail() {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="comment" className="block text-lg text-white">Комментарий (необязательно):</label>
+            <label htmlFor="comment" className={`block text-lg ${isDarkMode ? 'text-[#00baff]' : 'text-[#8a2be2]'}`}>Комментарий (необязательно):</label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              className="w-full px-4 py-2 rounded border-[#8a2be2] bg-gray-700 text-white"
+              className={`w-full px-4 py-2 rounded focus:outline-none focus:ring-2  ${isDarkMode ? 'border-[#00baff] bg-gray-700 text-white focus:ring-[#00baff]' : 'border-[#8a2be2] bg-white text-gray-700 focus:ring-[#8a2be2]'}`}
               placeholder="Ваш комментарий"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-[#00baff] hover:bg-[#8a2be2] text-white py-2 rounded"
+            className={`w-full py-2 rounded ${isDarkMode ? "border-[#00baff] bg-[#00baff] hover:bg-[#00bbffcf] text-white" : "border-[#8a2be2] bg-[#8a2be2] hover:bg-[#892be2d8] text-white"}`}
           >
             Записаться
           </button>
